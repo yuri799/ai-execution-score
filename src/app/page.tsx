@@ -5,7 +5,7 @@ const outcomes = [
   { icon: BarChart3, label: "Your AI Execution Score" },
   { icon: BadgeCheck, label: "Your AI profile" },
   { icon: Route, label: "Your custom course path" },
-  { icon: CheckCircle2, label: "Lessons you can skip" },
+  { icon: CheckCircle2, label: "A course tailored to your gaps" },
   { icon: ClipboardList, label: "Your first recommended AI project" },
   { icon: BookOpen, label: "A 7-day action plan" },
 ];

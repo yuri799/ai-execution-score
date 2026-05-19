@@ -155,10 +155,11 @@ function newContentPage(state: PdfState, title = "AI Execution Score Course") {
   rect(page, 0, 744, pageWidth, 48, navy);
   rect(page, 0, 740, pageWidth, 4, electric);
   text(page, "AI Execution Score", margin, 763, 12, white, true);
-  text(page, title, margin, 706, 24, navy, true);
+  const titleLines = wrap(title, maxChars(pageWidth - margin * 2, 24));
+  textLines(page, titleLines.slice(0, 2), margin, 706, 24, navy, true, 28);
   state.pages.push(page);
   state.page = page;
-  state.y = 672;
+  state.y = titleLines.length > 1 ? 640 : 672;
 }
 
 function ensureSpace(state: PdfState, height: number, title?: string) {
@@ -184,10 +185,12 @@ function addCard(state: PdfState, title: string, body: string[], options?: { acc
 }
 
 function addSectionTitle(state: PdfState, title: string) {
-  ensureSpace(state, 42, title);
-  text(state.page, title, margin, state.y, 20, navy, true);
-  rect(state.page, margin, state.y - 12, 78, 3, electric);
-  state.y -= 34;
+  const lines = wrap(title, maxChars(pageWidth - margin * 2, 20));
+  const height = lines.length * 24 + 20;
+  ensureSpace(state, height, "The Course");
+  textLines(state.page, lines, margin, state.y, 20, navy, true, 24);
+  rect(state.page, margin, state.y - lines.length * 24 - 2, 78, 3, electric);
+  state.y -= height;
 }
 
 function addBarsPage(result: QuizResult, state: PdfState) {
@@ -284,12 +287,14 @@ export function downloadPdfReport(result: QuizResult) {
     { accent: true },
   );
 
-  courseChapters.forEach((chapter) => {
+  courseChapters.forEach((chapter, index) => {
+    newContentPage(state, `Chapter ${index + 1}`);
     addSectionTitle(state, chapter.title);
     chapter.body.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
     addCard(state, "Exercise", [chapter.exercise], { accent: true, compact: true });
   });
 
+  newContentPage(state, "Implementation Sprint");
   addSectionTitle(state, "7-Day Implementation Sprint");
   addCard(state, "Your Action Plan", result.actionPlan.map((item) => `- ${item}`), { accent: true });
   addCard(state, "AI Safety Reminders", [

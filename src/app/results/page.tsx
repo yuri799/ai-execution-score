@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { ActionPlanChecklist } from "@/components/ActionPlanChecklist";
 import { CategoryScoreBar } from "@/components/CategoryScoreBar";
 import { CoursePathCard } from "@/components/CoursePathCard";
@@ -53,10 +52,6 @@ export default function ResultsPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <DownloadReportButton result={result} />
-            <Link href="/admin" className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-bold text-navy">
-              Admin
-              <ArrowRight size={18} />
-            </Link>
           </div>
         </div>
 
