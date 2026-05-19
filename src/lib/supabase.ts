@@ -6,7 +6,7 @@ type SupabaseAdminRow = {
   overall_score: number;
   profile: string;
   recommended_project: QuizResult["recommendedProject"];
-  users: { name?: string; email?: string } | Array<{ name?: string; email?: string }> | null;
+  users: { name?: string } | Array<{ name?: string }> | null;
 };
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,7 +23,7 @@ export async function saveQuizResult(result: QuizResult) {
 
   const { data: user, error: userError } = await supabase
     .from("users")
-    .insert({ name: result.name, email: result.email })
+    .insert({ name: result.name, email: result.email ?? `not-collected-${Date.now()}@ai-execution-score.local` })
     .select("id")
     .single();
 
@@ -55,7 +55,7 @@ export async function loadAdminResults() {
 
   const { data, error } = await supabase
     .from("quiz_responses")
-    .select("created_at, overall_score, profile, recommended_project, users(name, email)")
+    .select("created_at, overall_score, profile, recommended_project, users(name)")
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -64,7 +64,6 @@ export async function loadAdminResults() {
     const user = Array.isArray(row.users) ? row.users[0] : row.users;
     return {
       name: user?.name ?? "Unknown",
-      email: user?.email ?? "",
       overallScore: Number(row.overall_score),
       profile: row.profile,
       recommendedProject: row.recommended_project,

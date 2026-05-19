@@ -8,7 +8,6 @@ import type { ProjectRecommendation } from "@/lib/types";
 
 type AdminRow = {
   name: string;
-  email: string;
   overallScore: number;
   profile: string;
   recommendedProject: ProjectRecommendation;
@@ -30,10 +29,9 @@ export default function AdminPage() {
   }, []);
 
   const csv = useMemo(() => {
-    const header = ["Name", "Email", "Overall score", "Profile", "Recommended first project", "Date submitted"];
+    const header = ["Name", "Overall score", "Profile", "Recommended first project", "Date submitted"];
     const body = rows.map((row) => [
       row.name,
-      row.email,
       row.overallScore,
       row.profile,
       row.recommendedProject?.name ?? "",
@@ -79,7 +77,6 @@ export default function AdminPage() {
               <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
                 <tr>
                   <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Overall score</th>
                   <th className="px-4 py-3">Profile</th>
                   <th className="px-4 py-3">Recommended first project</th>
@@ -88,9 +85,8 @@ export default function AdminPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {rows.map((row, index) => (
-                  <tr key={`${row.email}-${row.createdAt}-${index}`}>
+                  <tr key={`${row.name}-${row.createdAt}-${index}`}>
                     <td className="px-4 py-4 font-semibold text-navy">{row.name}</td>
-                    <td className="px-4 py-4 text-slate-600">{row.email}</td>
                     <td className="px-4 py-4 font-bold text-electric">{row.overallScore}</td>
                     <td className="px-4 py-4 text-slate-700">{row.profile}</td>
                     <td className="px-4 py-4 text-slate-700">{row.recommendedProject?.name}</td>

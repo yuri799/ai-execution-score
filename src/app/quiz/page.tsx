@@ -16,7 +16,6 @@ export default function QuizPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -33,7 +32,7 @@ export default function QuizPage() {
   const question = quizQuestions[step];
   const progress = useMemo(() => (step / quizQuestions.length) * 100, [step]);
   const currentAnswer = question ? answers[question.id] : undefined;
-  const canContinue = isContactStep ? name.trim() && email.includes("@") : Array.isArray(currentAnswer) ? currentAnswer.length > 0 : Boolean(currentAnswer);
+  const canContinue = isContactStep ? name.trim() : Array.isArray(currentAnswer) ? currentAnswer.length > 0 : Boolean(currentAnswer);
 
   function setAnswer(value: AnswerValue) {
     setError("");
@@ -42,7 +41,7 @@ export default function QuizPage() {
 
   async function next() {
     if (!canContinue) {
-      setError(isContactStep ? "Enter your name and a valid email to see your result." : "Choose an answer before continuing.");
+      setError(isContactStep ? "Enter your name to see your result." : "Choose an answer before continuing.");
       return;
     }
     if (!isContactStep) {
@@ -53,12 +52,12 @@ export default function QuizPage() {
     setSaving(true);
     setError("");
     try {
-      const result = calculateResult(answers, name.trim(), email.trim());
+      const result = calculateResult(answers, name.trim());
       localStorage.setItem("ai-execution-latest-result", JSON.stringify(result));
       await saveQuizResult(result);
       router.push("/results");
     } catch (saveError) {
-      const result = calculateResult(answers, name.trim(), email.trim());
+      const result = calculateResult(answers, name.trim());
       localStorage.setItem("ai-execution-latest-result", JSON.stringify(result));
       setError(saveError instanceof Error ? `Saved locally. Supabase error: ${saveError.message}` : "Saved locally. Supabase could not be reached.");
       router.push("/results");
@@ -84,16 +83,12 @@ export default function QuizPage() {
           {isContactStep ? (
             <section className="rounded-lg border border-line bg-white p-6 shadow-soft">
               <p className="text-sm font-semibold uppercase tracking-wide text-electric">Almost done</p>
-              <h1 className="mt-2 text-3xl font-semibold text-navy">Where should we send this roadmap?</h1>
-              <p className="mt-3 max-w-2xl text-slate-600">Your score appears on the next screen. The app will also save the submission to Supabase when your keys are configured.</p>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <h1 className="mt-2 text-3xl font-semibold text-navy">Ready for your score?</h1>
+              <p className="mt-3 max-w-2xl text-slate-600">Enter your name and the app will generate your score, course path, and downloadable course PDF.</p>
+              <div className="mt-8 grid gap-4 sm:max-w-md">
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   Name
                   <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-lg border border-line px-4 py-3 outline-none focus:border-electric" />
-                </label>
-                <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                  Email
-                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="rounded-lg border border-line px-4 py-3 outline-none focus:border-electric" />
                 </label>
               </div>
             </section>

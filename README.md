@@ -1,6 +1,6 @@
 # AI Execution Score
 
-Responsive MVP for an AI readiness quiz, score dashboard, course roadmap, PDF report, and simple admin export.
+Responsive MVP for an AI readiness quiz, score dashboard, course roadmap, course PDF, and simple admin export.
 
 ## Run
 
@@ -11,13 +11,15 @@ npm run dev
 
 Create `.env.local` from `.env.example` to enable Supabase saving and admin reads.
 
+The quiz no longer collects email. If your existing `users.email` column is still required, the app writes an automatic `not-collected` placeholder so submissions still save.
+
 ## Supabase Tables
 
 ```sql
 create table public.users (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  email text not null,
+  email text,
   created_at timestamptz not null default now()
 );
 

@@ -117,18 +117,6 @@ export const quizQuestions: Question[] = [
   },
   {
     id: "q11",
-    title: "Do you understand tokens, context windows, and memory limits?",
-    type: "single",
-    options: [
-      "No",
-      "I have heard the terms",
-      "I understand the basics",
-      "I understand them pretty well",
-      "I understand how they affect real workflows",
-    ],
-  },
-  {
-    id: "q12",
     title: "Do you know when NOT to use AI?",
     type: "single",
     options: [
@@ -140,7 +128,7 @@ export const quizQuestions: Question[] = [
     ],
   },
   {
-    id: "q13",
+    id: "q12",
     title: "Where do you currently spend too much time? Select all that apply.",
     type: "multi",
     options: [
@@ -158,14 +146,14 @@ export const quizQuestions: Question[] = [
     ],
   },
   {
-    id: "q14",
+    id: "q13",
     title: "What would be most valuable for your business right now? Select up to 2.",
     type: "multi",
     maxSelections: 2,
     options: ["Save time", "Save money", "Make more money", "Make better/faster decisions", "Reduce errors", "Improve team execution"],
   },
   {
-    id: "q15",
+    id: "q14",
     title: "Which area would you most like AI to improve first?",
     type: "single",
     options: [
@@ -181,55 +169,37 @@ export const quizQuestions: Question[] = [
     ],
   },
   {
-    id: "q16",
+    id: "q15",
     title: "Do you know which business process AI should improve first?",
     type: "single",
     options: ["No idea", "I have a few ideas", "I know the general area", "I know the exact workflow", "I already have a prioritized AI roadmap"],
   },
   {
-    id: "q17",
-    title: "Do you track how much time or money your repeated business tasks cost you?",
-    type: "single",
-    options: ["No", "Rarely", "Sometimes", "Yes, for major tasks", "Yes, with clear metrics"],
-  },
-  {
-    id: "q18",
+    id: "q16",
     title: "Have you ever connected two apps together automatically?",
     type: "single",
     options: ["No", "I have seen it done", "I have used Zapier, Make, or something similar", "I have built simple workflows", "I have built advanced workflows"],
   },
   {
-    id: "q19",
+    id: "q17",
     title: "Do you understand what an API is?",
     type: "single",
     options: ["No", "I have heard of it", "I understand the basic idea", "I understand it pretty well", "I have used APIs before"],
   },
   {
-    id: "q20",
-    title: "Do you understand what an AI agent is?",
-    type: "single",
-    options: ["No", "I have heard the term", "I understand the basic idea", "I understand realistic use cases", "I have built or used agents"],
-  },
-  {
-    id: "q21",
-    title: "Which statement best describes your automation comfort level?",
-    type: "single",
-    options: ["I need everything explained simply", "I can follow step-by-step instructions", "I can build basic workflows", "I can troubleshoot workflows", "I can design systems"],
-  },
-  {
-    id: "q22",
+    id: "q18",
     title: "Do you understand the difference between paying for ChatGPT and paying for API usage?",
     type: "single",
     options: ["No", "I have heard there is a difference", "Somewhat", "Yes", "Yes, and I can roughly estimate usage cost"],
   },
   {
-    id: "q23",
+    id: "q19",
     title: "Do you have rules for what your team can paste into AI tools?",
     type: "single",
     options: ["No", "Not yet, but we need them", "Informal rules", "Written rules", "Written rules plus team training"],
   },
   {
-    id: "q24",
+    id: "q20",
     title: "Which data would you be comfortable pasting into AI? Select all that apply.",
     type: "multi",
     options: [
@@ -241,60 +211,6 @@ export const quizQuestions: Question[] = [
       "Legal documents",
       "Private client data",
       "None without review",
-    ],
-  },
-  {
-    id: "q25",
-    title: "Do you know how to safely use AI with sensitive business information?",
-    type: "single",
-    options: ["No", "Somewhat", "I know the basic cautions", "I have clear rules", "I have strong security practices"],
-  },
-  {
-    id: "q26",
-    title: "Does your team currently use AI?",
-    type: "single",
-    options: ["No", "A few people experiment with it", "Some use it regularly", "We have AI workflows in place", "AI is part of how we operate"],
-  },
-  {
-    id: "q27",
-    title: "What is the biggest obstacle to your team using AI better?",
-    type: "single",
-    options: [
-      "Fear of replacement",
-      "Lack of training",
-      "No clear use cases",
-      "Too many tools",
-      "No company rules",
-      "Poor prompting",
-      "No accountability",
-      "The owner has not prioritized it",
-      "I do not have a team",
-    ],
-  },
-  {
-    id: "q28",
-    title: "Do you have documented AI workflows?",
-    type: "single",
-    options: ["No", "A few notes", "Some documented prompts", "Documented workflows", "Documented, trained, and measured workflows"],
-  },
-  {
-    id: "q29",
-    title: "How many AI pilot projects are currently active in your business?",
-    type: "single",
-    options: ["0", "1", "2-3", "4-5", "More than 5"],
-  },
-  {
-    id: "q30",
-    title: "What kind of help do you need most right now?",
-    type: "single",
-    options: [
-      "Teach me the basics",
-      "Show me which tools to use",
-      "Help me choose the first AI project",
-      "Help me build workflows",
-      "Help me train my team",
-      "Help me measure ROI",
-      "Help me implement faster",
     ],
   },
 ];

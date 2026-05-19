@@ -11,21 +11,13 @@ const categoryMap: Record<string, CategoryKey[]> = {
   q8: ["prompting"],
   q9: ["verification"],
   q10: ["verification"],
-  q11: ["aiBasics", "verification"],
-  q12: ["verification", "teamPrivacyImplementation"],
-  q16: ["businessStrategy"],
-  q17: ["businessStrategy"],
-  q18: ["automationTools"],
-  q19: ["automationTools"],
-  q20: ["automationTools"],
-  q21: ["automationTools"],
-  q22: ["automationTools", "teamPrivacyImplementation"],
-  q23: ["teamPrivacyImplementation"],
-  q24: ["teamPrivacyImplementation", "verification"],
-  q25: ["teamPrivacyImplementation"],
-  q26: ["teamPrivacyImplementation"],
-  q28: ["teamPrivacyImplementation"],
-  q29: ["businessStrategy", "teamPrivacyImplementation"],
+  q11: ["verification", "teamPrivacyImplementation"],
+  q15: ["businessStrategy"],
+  q16: ["automationTools"],
+  q17: ["automationTools"],
+  q18: ["automationTools", "teamPrivacyImplementation"],
+  q19: ["teamPrivacyImplementation"],
+  q20: ["teamPrivacyImplementation", "verification"],
 };
 
 const modules = {
@@ -145,7 +137,7 @@ function q2Score(answer: unknown): number {
   return (Math.min(values.length, 8) / 8) * 4;
 }
 
-function q24Score(answer: unknown): number {
+function sensitiveDataScore(answer: unknown): number {
   const values = selected(answer);
   if (values.includes("None without review")) return 4;
   const sensitive = ["Passwords / API keys", "Financial data", "Private client data", "Legal documents"];
@@ -159,7 +151,7 @@ function q24Score(answer: unknown): number {
 
 function answerScore(questionId: string, answer: unknown): number {
   if (questionId === "q2") return q2Score(answer);
-  if (questionId === "q24") return q24Score(answer);
+  if (questionId === "q20") return sensitiveDataScore(answer);
   return singleScore(answer);
 }
 
@@ -184,11 +176,11 @@ function profileDescription(profile: string) {
 
 function riskFlags(answers: Answers) {
   const flags: string[] = [];
-  const q24 = selected(answers.q24);
+  const q24 = selected(answers.q20);
   for (const value of ["Passwords / API keys", "Financial data", "Private client data", "Legal documents"]) {
     if (q24.includes(value)) flags.push(value);
   }
-  if (q24.includes("Customer emails") && singleScore(answers.q23) < 3) {
+  if (q24.includes("Customer emails") && singleScore(answers.q19) < 3) {
     flags.push("Customer emails without privacy rules");
   }
   return flags;
@@ -227,11 +219,10 @@ function routeModules(scores: Record<CategoryKey, number>, flags: string[], answ
   else if (scores.automationTools > 70) add(course("Advanced", "module5", "You are ready to think about API cost and scalable security."));
   else add(course("Summary", "module5", "Keep the essential safety and pricing checklist."));
 
-  const teamObstacle = selected(answers.q27)[0];
-  if (scores.teamPrivacyImplementation < 80 || teamObstacle !== "I do not have a team") {
+  if (scores.teamPrivacyImplementation < 80) {
     add(course("Full", "module6", "Team adoption, rules, and workflow documentation are still active needs."));
   } else {
-    add(course("Skip", "module6", "No active team adoption issue was selected."));
+    add(course("Skip", "module6", "Your current answers show enough implementation structure for this stage."));
   }
 
   add(course("Full", "bonus", "Personalized FAQ support based on your profile."));
@@ -239,8 +230,8 @@ function routeModules(scores: Record<CategoryKey, number>, flags: string[], answ
 }
 
 function firstProject(answers: Answers, automationScore: number): ProjectRecommendation {
-  const q13 = selected(answers.q13);
-  const q15 = selected(answers.q15)[0] ?? "";
+  const q13 = selected(answers.q12);
+  const q15 = selected(answers.q14)[0] ?? "";
   const wants = [...q13, q15];
 
   const candidates: Array<[string[], ProjectRecommendation]> = [
@@ -341,7 +332,7 @@ function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
     .join(", ")}. Bring this roadmap to your AI Execution Accelerator session with Kai.`;
 }
 
-export function calculateResult(answers: Answers, name: string, email: string): QuizResult {
+export function calculateResult(answers: Answers, name: string): QuizResult {
   const buckets: Record<CategoryKey, number[]> = {
     aiBasics: [],
     prompting: [],
@@ -379,7 +370,7 @@ export function calculateResult(answers: Answers, name: string, email: string): 
 
   const base = {
     name,
-    email,
+    email: null,
     answers,
     categoryScores,
     overallScore,

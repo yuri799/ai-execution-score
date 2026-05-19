@@ -36,7 +36,7 @@ export type ProjectRecommendation = {
 
 export type QuizResult = {
   name: string;
-  email: string;
+  email?: string | null;
   answers: Answers;
   categoryScores: CategoryScores;
   overallScore: number;
