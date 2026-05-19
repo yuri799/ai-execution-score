@@ -1,4 +1,4 @@
-import { expandedLessonParagraphs, expandParagraphForPdf, findCourseModule } from "@/lib/course-content";
+import { expandedLessonParagraphs, findCourseModule } from "@/lib/course-content";
 import type { QuizResult } from "@/lib/types";
 
 function clean(text: string) {
@@ -128,7 +128,7 @@ function addLesson(state: PdfState, title: string, paragraphs: string[], moduleT
   const firstCardHeight = 24 + firstParagraphLines.length * 14 + 12;
   ensureSpace(state, headingHeight + firstCardHeight + 22, moduleTitle);
   addSectionTitle(state, title);
-  paragraphs.forEach((paragraph) => addCard(state, "", expandParagraphForPdf(moduleId, paragraph), { compact: true }));
+  paragraphs.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
 }
 
 function addBarsPage(result: QuizResult, state: PdfState) {
