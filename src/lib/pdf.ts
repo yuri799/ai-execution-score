@@ -1,4 +1,4 @@
-import { expandedLessonParagraphs, findCourseModule } from "@/lib/course-content";
+import { expandedLessonParagraphs, expandParagraphForPdf, findCourseModule } from "@/lib/course-content";
 import type { QuizResult } from "@/lib/types";
 
 function clean(text: string) {
@@ -88,19 +88,21 @@ function ensureSpace(state: PdfState, height: number, title?: string) {
 function addCard(state: PdfState, title: string, body: string[], options?: { accent?: boolean; compact?: boolean }) {
   const width = pageWidth - margin * 2;
   const titleLines = title ? wrap(title, maxChars(width - 28, 14)) : [];
-  const bodyLines = body.flatMap((item) => wrap(item, maxChars(width - 28, 9.5)));
-  const height = 24 + titleLines.length * 18 + bodyLines.length * 14 + (options?.compact ? 12 : 18);
+  const bodyLines = body.flatMap((item) => wrap(item, maxChars(width - 28, 10)));
+  const topPadding = titleLines.length ? 26 : 24;
+  const bottomPadding = options?.compact ? 26 : 30;
+  const height = topPadding + titleLines.length * 18 + bodyLines.length * 14 + bottomPadding;
   ensureSpace(state, height + 14, title);
   const y = state.y - height;
   rect(state.page, margin, y, width, height, options?.accent ? blueWash : white, line);
   rect(state.page, margin, y + height - 5, width, 5, options?.accent ? electric : navy);
-  let cursor = y + height - (titleLines.length ? 26 : 22);
+  let cursor = y + height - topPadding;
   if (titleLines.length) cursor = textLines(state.page, titleLines, margin + 18, cursor, 14, navy, true, 18) - 2;
   bodyLines.forEach((lineValue) => {
-    text(state.page, lineValue, margin + 18, cursor, 9.5, slate);
+    text(state.page, lineValue, margin + 18, cursor, 10, slate);
     cursor -= 14;
   });
-  state.y = y - 14;
+  state.y = y - 24;
 }
 
 function courseLessonsForStatus<T>(items: T[], status: string) {
@@ -111,21 +113,22 @@ function courseLessonsForStatus<T>(items: T[], status: string) {
 
 function addSectionTitle(state: PdfState, title: string) {
   const lines = wrap(title, maxChars(pageWidth - margin * 2, 20));
-  const height = lines.length * 24 + 20;
+  const height = lines.length * 24 + 30;
   ensureSpace(state, height, "The Course");
+  state.y -= 10;
   textLines(state.page, lines, margin, state.y, 20, navy, true, 24);
   rect(state.page, margin, state.y - lines.length * 24 - 2, 78, 3, electric);
-  state.y -= height;
+  state.y -= height - 10;
 }
 
-function addLesson(state: PdfState, title: string, paragraphs: string[], moduleTitle: string) {
+function addLesson(state: PdfState, title: string, paragraphs: string[], moduleTitle: string, moduleId: string) {
   const lines = wrap(title, maxChars(pageWidth - margin * 2, 20));
-  const firstParagraphLines = wrap(paragraphs[0] ?? "", maxChars(pageWidth - margin * 2 - 28, 9.5));
+  const firstParagraphLines = wrap(paragraphs[0] ?? "", maxChars(pageWidth - margin * 2 - 28, 10));
   const headingHeight = lines.length * 24 + 20;
   const firstCardHeight = 24 + firstParagraphLines.length * 14 + 12;
   ensureSpace(state, headingHeight + firstCardHeight + 22, moduleTitle);
   addSectionTitle(state, title);
-  paragraphs.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
+  paragraphs.forEach((paragraph) => addCard(state, "", expandParagraphForPdf(moduleId, paragraph), { compact: true }));
 }
 
 function addBarsPage(result: QuizResult, state: PdfState) {
@@ -230,7 +233,7 @@ export function downloadPdfReport(result: QuizResult) {
     addCard(state, recommendation.status, [recommendation.reason, courseModule.subtitle], { accent: true, compact: true });
 
     courseLessonsForStatus(courseModule.lessons, recommendation.status).forEach((lesson) => {
-      addLesson(state, lesson.title, expandedLessonParagraphs(courseModule.id, lesson.title, lesson.paragraphs), courseModule.title);
+      addLesson(state, lesson.title, expandedLessonParagraphs(courseModule.id, lesson.title, lesson.paragraphs), courseModule.title, courseModule.id);
     });
 
     addCard(state, "Action Step", [courseModule.actionStep], { accent: true, compact: true });

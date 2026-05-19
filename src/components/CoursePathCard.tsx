@@ -9,7 +9,6 @@ export function CoursePathCard({ module }: CoursePathCardProps) {
     <article className="rounded-lg border border-line bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-base font-semibold text-navy">{module.module}</h3>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase text-slate-600">{module.status}</span>
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-600">{module.reason}</p>
       <ul className="mt-4 space-y-2 text-sm text-slate-700">

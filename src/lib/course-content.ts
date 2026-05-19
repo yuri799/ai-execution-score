@@ -384,3 +384,24 @@ export function expandedLessonParagraphs(moduleId: string, lessonTitle: string, 
 
   return [...paragraphs, ...lessonExpansions[key]];
 }
+
+const paragraphExpansions: Record<string, string> = {
+  module1:
+    "In practice, this gives you better judgment when a vendor, team member, or tool claims something is AI-powered. You can ask what the system is actually doing, whether it is interpreting language or simply following rules, and whether the result needs review before it affects customers or revenue.",
+  module2:
+    "The business value of this mental model is confidence. Once you understand why the model behaves this way, you stop treating weak answers as mysterious and start improving the inputs, checking risky claims, and using AI where it is strongest.",
+  module3:
+    "For your own business, translate this idea into one workflow, one owner, and one measurable result. If the workflow cannot be described in a sentence and measured in time saved, revenue protected, errors reduced, or decisions improved, it is not ready to build yet.",
+  module4:
+    "Before adding another tool, decide how this would show up in a real workday. The strongest setup is usually simple: one tool for drafting or reasoning, one place to store reusable prompts and examples, and one review habit that keeps quality high.",
+  module5:
+    "This is where owners need to slow down. A workflow can be useful and still be unsafe if the wrong data is pasted into the wrong tool. Write the rule once, make it visible to the team, and review it before any automation starts touching sensitive information.",
+  module6:
+    "Adoption improves when the team sees a real before-and-after. Do not announce AI as a vague initiative. Pick one repeated task, show the old way, show the AI-assisted way, assign a human review step, and make the time savings visible.",
+  bonus:
+    "Use this as a decision filter instead of a headline. AI news changes quickly, but the owner questions stay the same: what work changes, what risk is introduced, who reviews the output, and what measurable business result improves?",
+};
+
+export function expandParagraphForPdf(moduleId: string, paragraph: string) {
+  return [paragraph, paragraphExpansions[moduleId] ?? paragraphExpansions.bonus];
+}
