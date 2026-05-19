@@ -1,86 +1,5 @@
+import { findCourseModule } from "@/lib/course-content";
 import type { QuizResult } from "@/lib/types";
-
-type CourseChapter = {
-  title: string;
-  body: string[];
-  exercise: string;
-};
-
-const courseChapters: CourseChapter[] = [
-  {
-    title: "Chapter 1: What AI Is Really For",
-    body: [
-      "AI is not a magic employee and it is not a strategy by itself. For a business owner, AI is best understood as a leverage tool. It helps you think faster, draft faster, summarize faster, compare options faster, and turn repeated work into documented systems. The goal is not to use more AI. The goal is to remove friction from work that already matters.",
-      "Start with the distinction between AI and automation. AI handles judgment-shaped tasks such as drafting, summarizing, classifying, brainstorming, rewriting, and explaining. Automation moves information from one place to another or triggers a predictable action. The best business systems often use both: AI decides or drafts, automation routes the output, and a human reviews the parts that carry risk.",
-      "Your first win should be specific. Do not start with 'use AI in marketing.' Start with 'turn one sales call transcript into a follow-up email, CRM summary, and next-step checklist.' Specific workflows are easier to test, improve, and delegate.",
-    ],
-    exercise: "Write down one repeated task that happens every week, who does it, what inputs it uses, and what finished output should look like.",
-  },
-  {
-    title: "Chapter 2: The Plain-English AI Glossary",
-    body: [
-      "An LLM, or large language model, is software trained to predict and generate language. It does not know your business unless you give it context. It can produce strong work when you provide goals, examples, constraints, source material, and a clear definition of success.",
-      "A prompt is not just a question. A useful business prompt is a work order. It tells the model the role it should play, the outcome you want, the background it should use, the format to return, and the standards it should follow. A weak prompt asks for an answer. A strong prompt creates a repeatable workflow.",
-      "Tokens are chunks of text. Context window means how much text the model can consider at one time. Memory is not the same as context. In most business workflows, you should assume AI remembers only what you provide in the current task unless your tool clearly says otherwise.",
-      "An API is a way for software tools to talk to each other. Agents are AI systems that can take multiple steps toward a goal. Agents can be useful, but they are usually not the first project for a business that does not yet have clear prompts, clean data, and review rules.",
-    ],
-    exercise: "Create a one-page company glossary with the terms AI, automation, LLM, prompt, API, token, context window, and agent.",
-  },
-  {
-    title: "Chapter 3: Prompting That Produces Business Output",
-    body: [
-      "Good prompting starts with context. Tell AI what business you are in, who the audience is, what the task is, what source material matters, and what the output should be used for. The more the work affects revenue, customer trust, or public reputation, the more context and review you need.",
-      "Use this structure: role, task, context, constraints, examples, output format, review criteria. For example: 'Act as an operations assistant. Turn these messy meeting notes into a decision log, owner list, and next actions. Keep the tone concise. Flag anything unclear instead of inventing details.'",
-      "When the first answer is weak, do not restart from scratch. Diagnose it. Was the goal unclear? Was the audience missing? Did you forget examples? Did you fail to define the format? Revision is part of prompting. A practical second prompt is: 'This is too generic. Make it specific to a local service business, remove buzzwords, and add a checklist my assistant can follow.'",
-    ],
-    exercise: "Turn one task you do often into a reusable prompt template with role, task, context, constraints, examples, and output format.",
-  },
-  {
-    title: "Chapter 4: Verification And Human Review",
-    body: [
-      "AI can sound confident while being wrong. This is not a minor detail. It is the reason every business workflow needs a review rule. The question is not whether AI is useful. The question is which outputs can be used directly, which need light review, and which require careful human approval.",
-      "Use stricter review for facts, numbers, legal claims, medical claims, financial claims, customer promises, public-facing content, hiring decisions, and anything involving private data. Use lighter review for brainstorming, formatting, summarizing your own notes, and first drafts that will never be sent without editing.",
-      "A simple verification workflow has four steps: ask AI to cite the source material it used, check important claims against trusted sources, ask AI to identify weak assumptions, and require a human to approve sensitive output before it leaves the company.",
-    ],
-    exercise: "Create three review labels for your business: safe to draft, review before use, and human-only decision.",
-  },
-  {
-    title: "Chapter 5: Choosing The First AI Project",
-    body: [
-      "The best first AI project is boring in the right way. It should happen often, have clear inputs, have a recognizable output, save time or improve consistency, and be easy for a human to review. Avoid starting with a project that needs perfect data, complex integrations, or fully autonomous decisions.",
-      "Score project ideas against four ROI categories: saves time, creates revenue, reduces errors, and improves speed of decision-making. A good first project usually scores well in at least two categories. If the project also helps the team learn how to use AI better, it is an even stronger candidate.",
-      "Your recommended first project in this report is not meant to be the final AI strategy. It is the first useful build. Once one workflow works, you can document it, train the team, and use the same pattern on the next workflow.",
-    ],
-    exercise: "List five possible AI workflows, then pick the one with the clearest input, output, owner, and review step.",
-  },
-  {
-    title: "Chapter 6: Tools, Automations, And When To Keep It Simple",
-    body: [
-      "Most businesses do not need a complicated tool stack to get their first AI win. Start with one strong AI chat tool and one place to store examples, prompts, and review rules. Add automation only when the manual workflow is already clear.",
-      "Use ChatGPT, Claude, Gemini, or Perplexity for drafting, summarizing, rewriting, research support, and decision support. Use Zapier, Make, or n8n when a repeated process needs to move information between apps. Use custom GPTs or assistants when you have stable instructions and examples that should be reused.",
-      "Do not build an advanced agent just because it sounds impressive. Agents are useful when the task has multiple steps, clear boundaries, reliable data, and low-risk actions. If your automation score is still low, start with human-approved drafts and checklists before trying autonomous workflows.",
-    ],
-    exercise: "Choose one tool for drafting, one tool for workflow storage, and one automation tool to learn only after the workflow is proven manually.",
-  },
-  {
-    title: "Chapter 7: Privacy, Cost, And Company Rules",
-    body: [
-      "AI privacy is mostly about rules before tools. Your team should know what they can paste into AI, what they cannot paste, and when they must ask for approval. Never paste passwords, API keys, private client data, confidential legal documents, or sensitive financial details into tools that are not approved for that use.",
-      "Cost has two layers. A subscription such as ChatGPT Plus is a fixed monthly tool cost. API usage is usually pay-as-you-go based on model choice and volume. API can be cheap for small workflows and expensive for high-volume workflows, so estimate usage before scaling.",
-      "A simple AI policy is enough for many small teams: approved tools, prohibited data, review rules, where prompts are stored, who owns each workflow, and how results are measured. Keep it short enough that people will actually use it.",
-    ],
-    exercise: "Write five company AI rules: approved tools, prohibited data, review requirements, workflow owner, and where examples are stored.",
-  },
-  {
-    title: "Chapter 8: Team Adoption And The 7-Day Implementation Sprint",
-    body: [
-      "Team adoption works best when AI is presented as an assistant, not a threat. Give people specific use cases, show examples, and make the first workflows practical. A team does not need twenty tools. It needs one or two reliable patterns that make daily work easier.",
-      "Documentation turns individual AI experiments into company capability. Save the prompt, source examples, review checklist, owner, and before-and-after result. If the workflow saves time or improves quality, train the next person on it.",
-      "Use the 7-day plan in this report as your sprint. The goal is not to finish every AI idea. The goal is to ship one small workflow that proves value and teaches the business how to build the next one.",
-    ],
-    exercise: "Choose one person, one workflow, one review step, and one metric for the next seven days.",
-  },
-];
 
 function clean(text: string) {
   return text.replace(/[^\x20-\x7E]/g, "-").replace(/[()\\]/g, "\\$&");
@@ -168,20 +87,26 @@ function ensureSpace(state: PdfState, height: number, title?: string) {
 
 function addCard(state: PdfState, title: string, body: string[], options?: { accent?: boolean; compact?: boolean }) {
   const width = pageWidth - margin * 2;
-  const titleLines = wrap(title, maxChars(width - 28, 14));
+  const titleLines = title ? wrap(title, maxChars(width - 28, 14)) : [];
   const bodyLines = body.flatMap((item) => wrap(item, maxChars(width - 28, 9.5)));
-  const height = 24 + titleLines.length * 18 + bodyLines.length * 14 + (options?.compact ? 8 : 18);
+  const height = 24 + titleLines.length * 18 + bodyLines.length * 14 + (options?.compact ? 12 : 18);
   ensureSpace(state, height + 14, title);
   const y = state.y - height;
   rect(state.page, margin, y, width, height, options?.accent ? blueWash : white, line);
   rect(state.page, margin, y + height - 5, width, 5, options?.accent ? electric : navy);
-  let cursor = y + height - 26;
-  cursor = textLines(state.page, titleLines, margin + 18, cursor, 14, navy, true, 18) - 2;
+  let cursor = y + height - (titleLines.length ? 26 : 22);
+  if (titleLines.length) cursor = textLines(state.page, titleLines, margin + 18, cursor, 14, navy, true, 18) - 2;
   bodyLines.forEach((lineValue) => {
     text(state.page, lineValue, margin + 18, cursor, 9.5, slate);
     cursor -= 14;
   });
   state.y = y - 14;
+}
+
+function courseLessonsForStatus<T>(items: T[], status: string) {
+  if (["Summary", "Skip"].includes(status)) return items.slice(0, Math.min(2, items.length));
+  if (["Beginner", "Practical"].includes(status)) return items.slice(0, Math.min(4, items.length));
+  return items;
 }
 
 function addSectionTitle(state: PdfState, title: string) {
@@ -281,17 +206,25 @@ export function downloadPdfReport(result: QuizResult) {
     state,
     "How To Use This Course",
     [
-      "Read the chapters in order if AI still feels scattered. If your roadmap marks a module as Summary or Skip, move quickly through that chapter and spend more time on the exercises connected to your gaps.",
-      "This course is designed to help you choose one useful AI project, build it with human review, and avoid random tool overload.",
+      "This PDF was assembled from the full AI for Business Owners course based on the user's quiz result. Full and advanced modules include deeper lessons. Summary modules include only the most useful sections. Skipped modules are removed from the main course so the user is not forced through material they already know.",
+      "The goal is to give the user a focused course they can actually complete, then bring concrete questions and implementation ideas to the AI Execution Accelerator session with Kai.",
     ],
     { accent: true },
   );
 
-  courseChapters.forEach((chapter, index) => {
-    newContentPage(state, `Chapter ${index + 1}`);
-    addSectionTitle(state, chapter.title);
-    chapter.body.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
-    addCard(state, "Exercise", [chapter.exercise], { accent: true, compact: true });
+  result.recommendedModules.forEach((recommendation) => {
+    const courseModule = findCourseModule(recommendation.module);
+    if (!courseModule) return;
+
+    newContentPage(state, courseModule.title);
+    addCard(state, recommendation.status, [recommendation.reason, courseModule.subtitle], { accent: true, compact: true });
+
+    courseLessonsForStatus(courseModule.lessons, recommendation.status).forEach((lesson) => {
+      addSectionTitle(state, lesson.title);
+      lesson.paragraphs.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
+    });
+
+    addCard(state, "Action Step", [courseModule.actionStep], { accent: true, compact: true });
   });
 
   newContentPage(state, "Implementation Sprint");
