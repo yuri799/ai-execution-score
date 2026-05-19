@@ -60,7 +60,7 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-6 py-14 lg:px-8">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-electric">What You'll Get</p>
+            <p className="text-sm font-bold uppercase tracking-wide text-electric">What You&apos;ll Get</p>
             <h2 className="mt-2 text-3xl font-semibold text-navy">A practical roadmap, not a generic score.</h2>
           </div>
         </div>
