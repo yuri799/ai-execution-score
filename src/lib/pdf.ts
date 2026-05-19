@@ -1,4 +1,4 @@
-import { findCourseModule } from "@/lib/course-content";
+import { expandedLessonParagraphs, findCourseModule } from "@/lib/course-content";
 import type { QuizResult } from "@/lib/types";
 
 function clean(text: string) {
@@ -118,6 +118,16 @@ function addSectionTitle(state: PdfState, title: string) {
   state.y -= height;
 }
 
+function addLesson(state: PdfState, title: string, paragraphs: string[], moduleTitle: string) {
+  const lines = wrap(title, maxChars(pageWidth - margin * 2, 20));
+  const firstParagraphLines = wrap(paragraphs[0] ?? "", maxChars(pageWidth - margin * 2 - 28, 9.5));
+  const headingHeight = lines.length * 24 + 20;
+  const firstCardHeight = 24 + firstParagraphLines.length * 14 + 12;
+  ensureSpace(state, headingHeight + firstCardHeight + 22, moduleTitle);
+  addSectionTitle(state, title);
+  paragraphs.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
+}
+
 function addBarsPage(result: QuizResult, state: PdfState) {
   const labels = {
     aiBasics: "AI Basics",
@@ -220,8 +230,7 @@ export function downloadPdfReport(result: QuizResult) {
     addCard(state, recommendation.status, [recommendation.reason, courseModule.subtitle], { accent: true, compact: true });
 
     courseLessonsForStatus(courseModule.lessons, recommendation.status).forEach((lesson) => {
-      addSectionTitle(state, lesson.title);
-      lesson.paragraphs.forEach((paragraph) => addCard(state, "", [paragraph], { compact: true }));
+      addLesson(state, lesson.title, expandedLessonParagraphs(courseModule.id, lesson.title, lesson.paragraphs), courseModule.title);
     });
 
     addCard(state, "Action Step", [courseModule.actionStep], { accent: true, compact: true });

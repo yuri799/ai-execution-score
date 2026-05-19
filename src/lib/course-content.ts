@@ -333,3 +333,54 @@ export const fullCourse: CourseModule[] = [
 export function findCourseModule(moduleTitle: string) {
   return fullCourse.find((module) => moduleTitle.toLowerCase().includes(module.title.split(":")[0].toLowerCase()));
 }
+
+const lessonExpansions: Record<string, string[]> = {
+  aiBasics: [
+    "For a business owner, the practical question is not whether a term sounds impressive. The practical question is what work it changes. If a tool reads, writes, summarizes, classifies, or drafts, it is probably using an LLM. If a tool simply moves data after a trigger, it is probably automation. This distinction keeps you from buying complexity when a simple workflow would do.",
+    "Use this lesson as your filter in sales calls and vendor demos. Ask: what does the model interpret, what does the automation trigger, what data does it need, where does a human review the result, and how do we know it worked? Those five questions cut through most AI hype quickly.",
+  ],
+  prompting: [
+    "The owner-level skill is not memorizing clever prompts. It is learning how to describe work clearly. Every useful prompt should make the invisible parts of your judgment visible: who the audience is, what good looks like, what should be avoided, and how the output will be used.",
+    "When a result is weak, treat it like managing a new assistant. Do not say 'AI is bad at this.' Give clearer context, show an example, narrow the task, or ask the model to identify what information is missing. The improvement loop is where most of the value appears.",
+  ],
+  verification: [
+    "Verification is not a lack of trust in AI. It is how you make AI usable in a real business. A draft can be useful and still require review. A summary can save time and still need spot checks. A recommendation can be insightful and still need a human decision-maker.",
+    "The easiest review system is a three-tier rule: low-risk internal drafts can move fast, customer-facing work gets reviewed, and legal, financial, medical, HR, or sensitive data decisions require careful human approval. Write this down before the team starts improvising.",
+  ],
+  strategy: [
+    "A strong AI strategy starts with business pain, not tools. Look for work that is frequent, language-heavy, measurable, and annoying enough that people will actually adopt a better workflow. The best first project usually feels obvious after you map where time is leaking.",
+    "Keep the first project narrow enough to finish. 'Improve sales with AI' is too vague. 'Draft a same-day follow-up email from every discovery call transcript' is specific, measurable, and easy to review. Narrow projects become reusable systems faster.",
+  ],
+  tools: [
+    "Do not build a stack before you have a workflow. Start with one strong chat tool and one place to save prompts, examples, and rules. Add Zapier, Make, n8n, voice AI, custom GPTs, or agents only when the manual version of the workflow is already useful.",
+    "A good tool decision has a job attached to it. If you cannot name the recurring task, owner, input, output, review step, and success metric, wait before buying another subscription. Tool overload is one of the fastest ways to make AI feel chaotic.",
+  ],
+  safety: [
+    "Privacy rules should be written before the first sensitive workflow is built. Decide what the team can paste into AI, what requires a business-tier tool, and what should never go into a model without formal approval. Ambiguity is where bad habits form.",
+    "Cost rules matter too. Set usage caps, keep prompts concise, use smaller models when quality is good enough, and monitor early workflows weekly. AI costs usually stay reasonable when someone owns them and balloon when nobody is watching.",
+  ],
+  adoption: [
+    "Team adoption depends on trust and repetition. People need to hear that AI is there to remove tedious work, then they need a real workflow that proves it. A vague instruction to 'use AI more' will not change behavior. A shared prompt that saves 30 minutes every Tuesday will.",
+    "Document wins as soon as they happen. Save the prompt, before-and-after output, time saved, review rule, and owner. This turns scattered experiments into company capability and gives the next person a pattern they can copy.",
+  ],
+};
+
+export function expandedLessonParagraphs(moduleId: string, lessonTitle: string, paragraphs: string[]) {
+  const title = lessonTitle.toLowerCase();
+  const key =
+    moduleId === "module1"
+      ? "aiBasics"
+      : moduleId === "module2" && title.includes("prompt")
+        ? "prompting"
+        : moduleId === "module2"
+          ? "verification"
+          : moduleId === "module3"
+            ? "strategy"
+            : moduleId === "module4"
+              ? "tools"
+              : moduleId === "module5"
+                ? "safety"
+                : "adoption";
+
+  return [...paragraphs, ...lessonExpansions[key]];
+}
