@@ -64,14 +64,14 @@ export function IqBellCurve({ score }: IqBellCurveProps) {
           <path key={`${band.from}-${band.to}`} d={areaPath(band.from, band.to)} fill={band.color} opacity="0.72" />
         ))}
         <path d={curvePath()} fill="none" stroke="#071426" strokeWidth="4" strokeLinecap="round" />
-        <line x1={xFor(100)} x2={xFor(100)} y1="42" y2={baseline + 6} stroke="#94a3b8" strokeDasharray="5 7" />
-        <text x={xFor(100)} y="35" textAnchor="middle" fill="#64748b" fontSize="18" fontWeight="700">
+        <line x1={xFor(100)} x2={xFor(100)} y1="78" y2={baseline + 6} stroke="#94a3b8" strokeDasharray="5 7" />
+        <text x={xFor(100)} y="82" textAnchor="middle" fill="#64748b" fontSize="16" fontWeight="700">
           Average
         </text>
 
         <line className="iq-marker-line" x1={markerX} x2={markerX} y1={baseline + 8} y2={markerY - 8} stroke="#1f7bff" strokeWidth="5" strokeLinecap="round" />
         <circle className="iq-marker-dot" cx={markerX} cy={markerY - 12} r="10" fill="#1f7bff" />
-        <text x={markerX} y={Math.max(24, markerY - 30)} textAnchor="middle" fill="#1f7bff" fontSize="20" fontWeight="800">
+        <text x={markerX} y="34" textAnchor="middle" fill="#1f7bff" fontSize="20" fontWeight="800">
           You: {score}
         </text>
 
