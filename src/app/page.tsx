@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, BarChart3, BookOpen, CheckCircle2, ClipboardList, Route } from "lucide-react";
 
 const outcomes = [
-  { icon: BarChart3, label: "Your AI Execution Score" },
+  { icon: BarChart3, label: "Your AI Business IQ" },
   { icon: BadgeCheck, label: "Your AI profile" },
   { icon: Route, label: "Your custom course path" },
   { icon: CheckCircle2, label: "A course tailored to your gaps" },
@@ -17,17 +17,17 @@ export default function LandingPage() {
         <div className="mx-auto grid min-h-[72vh] max-w-6xl content-center gap-10 px-6 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div>
             <div className="mb-6 inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-blue-100">
-              AI Execution Score
+              AI Business IQ
             </div>
-            <h1 className="max-w-3xl text-5xl font-bold leading-tight sm:text-6xl">Find Out Where You Really Stand With AI</h1>
+            <h1 className="max-w-3xl text-5xl font-bold leading-tight sm:text-6xl">What&apos;s Your AI Business IQ?</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              Take the AI Execution Score quiz and get a personalized roadmap showing what to learn, what to skip, and what AI system to build first in your business.
+              Take the 5-minute assessment. Find out where you really stand. Get a personalized AI course tailored to your score.
             </p>
             <Link
               href="/quiz"
               className="mt-8 inline-flex items-center gap-2 rounded-lg bg-electric px-6 py-4 text-sm font-bold text-white shadow-soft transition hover:bg-blue-600"
             >
-              Start My AI Execution Score
+              Find My AI Business IQ
               <ArrowRight size={18} />
             </Link>
           </div>
@@ -35,20 +35,20 @@ export default function LandingPage() {
           <div className="rounded-lg border border-white/10 bg-white p-6 text-navy shadow-soft">
             <div className="flex items-center justify-between border-b border-line pb-4">
               <div>
-                <p className="text-sm font-semibold text-slate-500">Preview score</p>
-                <p className="text-3xl font-bold">72</p>
+                <p className="text-sm font-semibold text-slate-500">Preview IQ score</p>
+                <p className="text-3xl font-bold">142</p>
               </div>
-              <span className="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-electric">AI Builder</span>
+              <span className="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-electric">AI Operator - Top 20%</span>
             </div>
             <div className="mt-6 space-y-4">
               {["AI Basics", "Prompting", "Verification", "Business Strategy", "Automation Tools", "Team & Privacy"].map((label, index) => (
                 <div key={label}>
                   <div className="mb-2 flex justify-between text-sm font-medium">
                     <span>{label}</span>
-                    <span>{[82, 74, 66, 88, 58, 64][index]}</span>
+                    <span>{[78, 70, 65, 82, 58, 60][index]}</span>
                   </div>
                   <div className="h-2 rounded-full bg-slate-200">
-                    <div className="h-2 rounded-full bg-electric" style={{ width: `${[82, 74, 66, 88, 58, 64][index]}%` }} />
+                    <div className="h-2 rounded-full bg-electric" style={{ width: `${[78, 70, 65, 82, 58, 60][index]}%` }} />
                   </div>
                 </div>
               ))}

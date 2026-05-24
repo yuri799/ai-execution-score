@@ -68,12 +68,12 @@ function maxChars(width: number, size: number) {
   return Math.max(24, Math.floor(width / (size * 0.52)));
 }
 
-function newContentPage(state: PdfState, title = "AI Execution Score Course") {
+function newContentPage(state: PdfState, title = "AI Business IQ Course") {
   const page: PdfPage = { commands: [] };
   rect(page, 0, 0, pageWidth, pageHeight, mist);
   rect(page, 0, 744, pageWidth, 48, navy);
   rect(page, 0, 740, pageWidth, 4, electric);
-  text(page, "AI Execution Score", margin, 763, 12, white, true);
+  text(page, "AI Business IQ", margin, 763, 12, white, true);
   const titleLines = wrap(title, maxChars(pageWidth - margin * 2, 24));
   textLines(page, titleLines.slice(0, 2), margin, 706, 24, navy, true, 28);
   state.pages.push(page);
@@ -155,11 +155,11 @@ function buildDashboard(result: QuizResult, state: PdfState) {
   newContentPage(state, "Your Score Dashboard");
   const cardY = 540;
   rect(state.page, margin, cardY, 210, 126, navy);
-  text(state.page, "AI EXECUTION SCORE", margin + 18, cardY + 96, 10, [0.78, 0.86, 1], true);
+  text(state.page, "AI BUSINESS IQ", margin + 18, cardY + 96, 10, [0.78, 0.86, 1], true);
   text(state.page, String(result.overallScore), margin + 18, cardY + 42, 54, white, true);
-  text(state.page, "/100", margin + 116, cardY + 47, 17, [0.78, 0.86, 1], true);
+  text(state.page, "IQ", margin + 116, cardY + 47, 17, [0.78, 0.86, 1], true);
   rect(state.page, margin + 18, cardY + 20, 160, 7, [0.18, 0.25, 0.34]);
-  rect(state.page, margin + 18, cardY + 20, (160 * result.overallScore) / 100, 7, electric);
+  rect(state.page, margin + 18, cardY + 20, (160 * result.overallScore) / 225, 7, electric);
 
   rect(state.page, margin + 232, cardY, 284, 126, white, line);
   rect(state.page, margin + 252, cardY + 82, 124, 24, blueWash);
@@ -177,8 +177,8 @@ function buildCover(result: QuizResult): PdfPage {
   rect(page, 430, 566, 116, 116, electric);
   rect(page, 442, 578, 92, 92, navy, white);
   text(page, String(result.overallScore), 460, 617, 36, white, true);
-  text(page, "/100", 492, 600, 12, [0.78, 0.86, 1], true);
-  text(page, "AI Execution Score", margin, 690, 16, [0.78, 0.86, 1], true);
+  text(page, "IQ", 492, 600, 12, [0.78, 0.86, 1], true);
+  text(page, "AI Business IQ", margin, 690, 16, [0.78, 0.86, 1], true);
   text(page, "Personalized", margin, 600, 42, white, true);
   text(page, "AI Course", margin, 554, 42, white, true);
   text(page, `Prepared for ${result.name}`, margin, 504, 16, [0.78, 0.86, 1], true);
@@ -285,7 +285,7 @@ export function downloadPdfReport(result: QuizResult) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "ai-execution-score-course.pdf";
+  link.download = "ai-business-iq-course.pdf";
   link.click();
   URL.revokeObjectURL(url);
 }

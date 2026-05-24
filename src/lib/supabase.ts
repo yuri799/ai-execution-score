@@ -17,13 +17,13 @@ export const supabase =
 
 export async function saveQuizResult(result: QuizResult) {
   const existing = getLocalResults();
-  localStorage.setItem("ai-execution-results", JSON.stringify([result, ...existing]));
+  localStorage.setItem("ai-business-iq-results", JSON.stringify([result, ...existing]));
 
   if (!supabase) return { savedToSupabase: false };
 
   const { data: user, error: userError } = await supabase
     .from("users")
-    .insert({ name: result.name, email: result.email ?? `not-collected-${Date.now()}@ai-execution-score.local` })
+    .insert({ name: result.name, email: result.email ?? `not-collected-${Date.now()}@youraibusinessiq.com` })
     .select("id")
     .single();
 
@@ -75,7 +75,7 @@ export async function loadAdminResults() {
 export function getLocalResults(): QuizResult[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem("ai-execution-results") ?? "[]");
+    return JSON.parse(localStorage.getItem("ai-business-iq-results") ?? localStorage.getItem("ai-execution-results") ?? "[]");
   } catch {
     return [];
   }

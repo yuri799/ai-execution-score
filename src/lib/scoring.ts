@@ -1,24 +1,5 @@
-import type { Answers, CategoryKey, CourseRecommendation, ProjectRecommendation, QuizResult } from "@/lib/types";
-
-const categoryMap: Record<string, CategoryKey[]> = {
-  q1: ["aiBasics", "automationTools"],
-  q2: ["aiBasics", "automationTools"],
-  q3: ["aiBasics"],
-  q4: ["aiBasics", "automationTools"],
-  q5: ["prompting"],
-  q6: ["prompting"],
-  q7: ["prompting"],
-  q8: ["prompting"],
-  q9: ["verification"],
-  q10: ["verification"],
-  q11: ["verification", "teamPrivacyImplementation"],
-  q15: ["businessStrategy"],
-  q16: ["automationTools"],
-  q17: ["automationTools"],
-  q18: ["automationTools", "teamPrivacyImplementation"],
-  q19: ["teamPrivacyImplementation"],
-  q20: ["teamPrivacyImplementation", "verification"],
-};
+import { quizQuestions } from "@/lib/quiz-data";
+import type { Answers, CategoryKey, CourseRecommendation, ProjectRecommendation, QuestionOption, QuizResult } from "@/lib/types";
 
 const modules = {
   module1: {
@@ -116,189 +97,221 @@ export const actionPlan = [
   "Day 7: Measure whether it saves time, improves quality, or creates value.",
 ];
 
-function selected(answer: unknown): string[] {
-  if (Array.isArray(answer)) return answer.map(answerText);
-  if (typeof answer === "string" && answer.length > 0) return [answerText(answer)];
+const categoryKeys: CategoryKey[] = ["aiBasics", "prompting", "verification", "businessStrategy", "automationTools", "teamPrivacyImplementation"];
+
+const iqAnchors = [
+  [0, 50],
+  [30, 70],
+  [60, 85],
+  [90, 95],
+  [120, 100],
+  [150, 110],
+  [180, 125],
+  [210, 145],
+  [240, 175],
+  [260, 200],
+  [270, 225],
+] as const;
+
+function selectedIds(answer: unknown): string[] {
+  if (Array.isArray(answer)) return answer;
+  if (typeof answer === "string" && answer.length > 0) return [answer];
   return [];
 }
 
-function answerText(answer: string) {
-  return answer.replace(/^[A-I]\.\s/, "");
+function optionText(optionId: string) {
+  for (const question of quizQuestions) {
+    const match = question.options.find((option) => option.id === optionId);
+    if (match) return match.label;
+  }
+  return "";
 }
 
-function singleScore(answer: unknown): number {
-  const letter = typeof answer === "string" ? answer.charAt(0) : "";
-  return Math.max(0, ["A", "B", "C", "D", "E"].indexOf(letter));
+function selectedOptions(questionId: string, answers: Answers) {
+  const question = quizQuestions.find((item) => item.id === questionId);
+  if (!question) return [];
+  const ids = selectedIds(answers[questionId]);
+  return ids.map((id) => question.options.find((option) => option.id === id)).filter(Boolean) as QuestionOption[];
 }
 
-function q2Score(answer: unknown): number {
-  const values = selected(answer);
-  if (values.includes("None of these")) return 0;
-  return (Math.min(values.length, 8) / 8) * 4;
+function emptyCategoryTotals() {
+  return Object.fromEntries(categoryKeys.map((category) => [category, 0])) as Record<CategoryKey, number>;
 }
 
-function sensitiveDataScore(answer: unknown): number {
-  const values = selected(answer);
-  if (values.includes("None without review")) return 4;
-  const sensitive = ["Passwords / API keys", "Financial data", "Private client data", "Legal documents"];
-  const riskCount = values.filter((value) => sensitive.includes(value)).length;
-  if (values.includes("Passwords / API keys")) return 0;
-  if (riskCount >= 2) return 0.5;
-  if (riskCount === 1 || values.includes("Customer emails")) return 1.5;
-  if (values.includes("Internal SOPs")) return 3;
-  return 3.5;
+function cappedQuestionContribution(options: QuestionOption[], maxPoints?: number, floorAtZero = false) {
+  const raw = options.reduce((sum, option) => sum + option.points, 0);
+  const positiveRaw = Math.max(0, raw);
+  const cappedTotal = Math.min(positiveRaw, maxPoints ?? positiveRaw);
+  const categoryPoints = emptyCategoryTotals();
+
+  if (floorAtZero && raw < 0) return { rawScore: 0, categoryPoints };
+  if (positiveRaw === 0) return { rawScore: 0, categoryPoints };
+
+  const scale = positiveRaw > cappedTotal ? cappedTotal / positiveRaw : 1;
+  for (const option of options) {
+    if (option.points > 0) categoryPoints[option.category] += option.points * scale;
+  }
+  return { rawScore: cappedTotal, categoryPoints };
 }
 
-function answerScore(questionId: string, answer: unknown): number {
-  if (questionId === "q2") return q2Score(answer);
-  if (questionId === "q20") return sensitiveDataScore(answer);
-  return singleScore(answer);
+function scoreQuestion(questionId: string, answers: Answers) {
+  const question = quizQuestions.find((item) => item.id === questionId);
+  if (!question) return { rawScore: 0, categoryPoints: emptyCategoryTotals() };
+  const options = selectedOptions(questionId, answers);
+  return cappedQuestionContribution(options, question.maxPoints, questionId === "q25");
 }
 
-function profileFor(score: number) {
-  if (score <= 30) return "AI Beginner";
-  if (score <= 50) return "AI User";
-  if (score <= 70) return "AI Operator";
-  if (score <= 85) return "AI Builder";
-  return "AI Strategist";
+function maxCategoryPoints() {
+  const totals = emptyCategoryTotals();
+  for (const question of quizQuestions) {
+    if (question.type === "single") {
+      const best = question.options.reduce((current, option) => (option.points > current.points ? option : current), question.options[0]);
+      totals[best.category] += Math.max(0, best.points);
+    } else {
+      const positiveOptions = question.options.filter((option) => option.points > 0);
+      const { categoryPoints } = cappedQuestionContribution(positiveOptions, question.maxPoints, question.id === "q25");
+      for (const category of categoryKeys) totals[category] += categoryPoints[category];
+    }
+  }
+  return totals;
+}
+
+function iqFromRaw(rawScore: number) {
+  const raw = Math.max(0, Math.min(270, rawScore));
+  for (let i = 0; i < iqAnchors.length - 1; i++) {
+    const [rawA, iqA] = iqAnchors[i];
+    const [rawB, iqB] = iqAnchors[i + 1];
+    if (raw >= rawA && raw <= rawB) {
+      const progress = (raw - rawA) / (rawB - rawA);
+      return Math.round(iqA + progress * (iqB - iqA));
+    }
+  }
+  return 225;
+}
+
+function tierFor(iqScore: number) {
+  if (iqScore >= 225) return "AI Genius - Where you need to be";
+  if (iqScore >= 190) return "AI Strategist - Top 1%";
+  if (iqScore >= 160) return "AI Builder - Top 5%";
+  if (iqScore >= 135) return "AI Operator - Top 20%";
+  if (iqScore >= 115) return "AI Practitioner - Above Average";
+  if (iqScore >= 100) return "AI Capable - At Business Average";
+  if (iqScore >= 85) return "AI Aware - Below Business Average";
+  if (iqScore >= 70) return "AI Curious - Just Getting Started";
+  return "AI Skeptic - Behind the Curve";
+}
+
+export function percentileForIq(iqScore: number) {
+  const z = (iqScore - 100) / 20;
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp((-z * z) / 2);
+  const probability =
+    d *
+    t *
+    (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  const cdf = z > 0 ? 1 - probability : probability;
+  return Math.min(99, Math.max(1, Math.round(cdf * 100)));
 }
 
 function profileDescription(profile: string) {
-  const descriptions: Record<string, string> = {
-    "AI Beginner": "You need a clear foundation, simple language, and one practical business use case before adding more tools.",
-    "AI User": "You have useful exposure, but your biggest gains will come from structure, repeatable prompts, and smarter project selection.",
-    "AI Operator": "You are ready to turn individual AI usage into documented business workflows with review steps and ROI tracking.",
-    "AI Builder": "You can move beyond ad hoc tool use and build durable systems, automations, and team practices.",
-    "AI Strategist": "You are positioned to lead AI execution strategically, prioritize high-ROI systems, and scale adoption across the business.",
-  };
-  return descriptions[profile];
+  if (profile.includes("Skeptic") || profile.includes("Curious") || profile.includes("Aware")) {
+    return "You are early in the AI adoption curve. Your biggest win is building strong foundations, safer prompting habits, and one clear first workflow.";
+  }
+  if (profile.includes("Capable") || profile.includes("Practitioner")) {
+    return "You are near or above the business-owner average. Your next move is turning individual AI use into repeatable workflows with stronger verification and ROI focus.";
+  }
+  return "You are ahead of most business owners. The opportunity now is disciplined execution: better systems, sharper automation, safer team rollout, and higher-ROI AI projects.";
 }
 
 function riskFlags(answers: Answers) {
-  const flags: string[] = [];
-  const q24 = selected(answers.q20);
-  for (const value of ["Passwords / API keys", "Financial data", "Private client data", "Legal documents"]) {
-    if (q24.includes(value)) flags.push(value);
-  }
-  if (q24.includes("Customer emails") && singleScore(answers.q19) < 3) {
-    flags.push("Customer emails without privacy rules");
-  }
-  return flags;
+  return selectedOptions("q25", answers)
+    .filter((option) => option.points < 0)
+    .map((option) => option.label);
 }
 
 function course(status: CourseRecommendation["status"], key: keyof typeof modules, reason: string): CourseRecommendation {
   return { ...modules[key], status, reason };
 }
 
-function routeModules(scores: Record<CategoryKey, number>, flags: string[], answers: Answers) {
+function routeModules(profile: string, scores: Record<CategoryKey, number>, flags: string[]) {
   const recommendedModules: CourseRecommendation[] = [];
   const skippedModules: CourseRecommendation[] = [];
+  const add = (item: CourseRecommendation) => (item.status === "Skip" ? skippedModules.push(item) : recommendedModules.push(item));
+  const beginner = profile.includes("Skeptic") || profile.includes("Curious") || profile.includes("Aware");
+  const intermediate = profile.includes("Capable") || profile.includes("Practitioner");
 
-  const add = (item: CourseRecommendation) => {
-    if (item.status === "Skip") skippedModules.push(item);
-    else recommendedModules.push(item);
-  };
-
-  if (scores.aiBasics < 50) add(course("Full", "module1", "AI basics are the first bottleneck."));
-  else if (scores.aiBasics <= 75) add(course("Summary", "module1", "You know the core ideas, but a fast cleanup will help."));
-  else add(course("Skip", "module1", "Your AI fundamentals are already strong."));
-
-  if (scores.verification < 60 || scores.aiBasics < 60) add(course("Full", "module2", "Verification and model behavior need stronger foundations."));
-  else if (scores.verification <= 80) add(course("Practical", "module2", "Focus on trust, verification, and workflow limits."));
-  else add(course("Summary", "module2", "Keep the trust-and-verify lesson, then move quickly."));
-
-  if (scores.businessStrategy < 50) add(course("Beginner", "module3", "You need help choosing the first workflow."));
-  else if (scores.businessStrategy <= 75) add(course("Full", "module3", "Strategy is close; this turns ideas into a roadmap."));
-  else add(course("Advanced", "module3", "You are ready for higher-ROI project selection."));
-
-  if (scores.automationTools < 50) add(course("Beginner", "module4", "Start with practical tools and simple workflows."));
-  else if (scores.automationTools <= 75) add(course("Full", "module4", "You can expand into reusable workflows."));
-  else add(course("Advanced", "module4", "You can evaluate agents and deeper automation patterns."));
-
-  if (scores.teamPrivacyImplementation < 80 || flags.length > 0) add(course("Full", "module5", "Privacy, cost, and safety need clear rules."));
-  else if (scores.automationTools > 70) add(course("Advanced", "module5", "You are ready to think about API cost and scalable security."));
-  else add(course("Summary", "module5", "Keep the essential safety and pricing checklist."));
-
-  if (scores.teamPrivacyImplementation < 80) {
-    add(course("Full", "module6", "Team adoption, rules, and workflow documentation are still active needs."));
+  if (beginner) {
+    add(course("Full", "module1", "AI foundations should come first."));
+    add(course("Full", "module2", "Model behavior and verification need to be clear before scaling usage."));
+    add(course("Beginner", "module3", "Start with one high-ROI workflow instead of a broad AI plan."));
+    add(course("Beginner", "module4", "Use practical tools and simple workflows before advanced automation."));
+  } else if (intermediate) {
+    add(course(scores.aiBasics < 70 ? "Full" : "Summary", "module1", "Refresh the fundamentals that affect business decisions."));
+    add(course(scores.verification < 70 ? "Full" : "Practical", "module2", "Strengthen trust, verification, and model limits."));
+    add(course("Full", "module3", "Turn AI ideas into a prioritized business roadmap."));
+    add(course("Full", "module4", "Move from ad hoc AI use into reusable workflows."));
   } else {
-    add(course("Skip", "module6", "Your current answers show enough implementation structure for this stage."));
+    add(course(scores.aiBasics < 75 ? "Summary" : "Skip", "module1", "Move quickly through fundamentals unless a gap remains."));
+    add(course(scores.verification < 80 ? "Practical" : "Summary", "module2", "Keep the verification framework sharp."));
+    add(course("Advanced", "module3", "Focus on higher-ROI project selection and strategic leverage."));
+    add(course("Advanced", "module4", "Evaluate advanced automation, voice AI, and agent use cases."));
   }
 
-  add(course("Full", "bonus", "Personalized FAQ support based on your profile."));
+  if (scores.teamPrivacyImplementation < 80 || flags.length > 0) add(course("Full", "module5", "Privacy, cost, and safety rules need attention."));
+  else add(course("Advanced", "module5", "Tighten cost controls and security practices for scale."));
+
+  if (scores.teamPrivacyImplementation < 75 || beginner || intermediate) add(course("Full", "module6", "Team adoption and workflow documentation will help turn AI into capability."));
+  else add(course("Skip", "module6", "Your answers show enough team implementation structure for this stage."));
+
+  add(course("Full", "bonus", "Use the FAQ to handle common objections and sharpen owner judgment."));
   return { recommendedModules, skippedModules };
 }
 
 function firstProject(answers: Answers, automationScore: number): ProjectRecommendation {
-  const q13 = selected(answers.q12);
-  const q15 = selected(answers.q14)[0] ?? "";
-  const wants = [...q13, q15];
+  const selectedProblems = selectedOptions("q16", answers).map((option) => option.label);
+  const leadSpeed = optionText(selectedIds(answers.q17)[0] ?? "");
+  const contentUse = optionText(selectedIds(answers.q18)[0] ?? "");
+  const signals = [...selectedProblems, leadSpeed, contentUse].join(" ").toLowerCase();
 
-  const candidates: Array<[string[], ProjectRecommendation]> = [
-    [
-      ["Email / inbox"],
-      {
-        name: "AI Email Triage Assistant",
-        description:
-          "Sort, summarize, and draft replies for incoming emails while flagging urgent, revenue-related, and relationship-sensitive messages for human review.",
-      },
-    ],
-    [
-      ["Lead follow-up", "Sales"],
-      {
-        name: "AI Lead Follow-Up Assistant",
-        description:
-          "Draft personalized follow-up emails, qualify leads, summarize conversations, and remind the team when a lead needs attention.",
-      },
-    ],
-    [
-      ["Content creation", "Content", "Marketing"],
-      {
-        name: "AI Content Repurposing Workflow",
-        description:
-          "Turn one long-form content asset into emails, social posts, article outlines, short-form scripts, and promotional angles.",
-      },
-    ],
-    [
-      ["Customer service", "Customer support"],
-      {
-        name: "AI Customer Reply Drafting Assistant",
-        description:
-          "Draft support replies based on company policies, FAQs, and previous examples while requiring human approval before sending.",
-      },
-    ],
-    [
-      ["Operations", "Admin", "Admin work", "Personal productivity"],
-      {
-        name: "AI Operations Assistant",
-        description:
-          "Turn recurring admin tasks into documented workflows, checklists, summaries, and action items.",
-      },
-    ],
-    [
-      ["Reporting", "Finance / reporting", "Make better/faster decisions"],
-      {
-        name: "AI Decision Dashboard Assistant",
-        description:
-          "Summarize reports, highlight key changes, explain what matters, and recommend next actions for human review.",
-      },
-    ],
-    [
-      ["Hiring / training", "Hiring / team training"],
-      {
-        name: "AI Training & SOP Assistant",
-        description:
-          "Turn existing processes, videos, calls, and notes into SOPs, onboarding guides, checklists, and training lessons.",
-      },
-    ],
-  ];
-
-  const match = candidates.find(([signals]) => signals.some((signal) => wants.includes(signal)));
-  const project = match?.[1] ?? candidates[4][1];
-  if (automationScore < 40 && project.name.includes("Dashboard")) {
-    return candidates[4][1];
+  if (signals.includes("lead") || signals.includes("follow-up")) {
+    return {
+      name: "AI Lead Follow-Up Assistant",
+      description: "Draft personalized follow-up emails, qualify leads, summarize conversations, and remind the team when a lead needs attention.",
+    };
   }
-  return project;
+  if (signals.includes("email")) {
+    return {
+      name: "AI Email Triage Assistant",
+      description: "Sort, summarize, and draft replies for incoming emails while flagging urgent, revenue-related, and relationship-sensitive messages for human review.",
+    };
+  }
+  if (signals.includes("content") || signals.includes("blog") || signals.includes("social")) {
+    return {
+      name: "AI Content Repurposing Workflow",
+      description: "Turn one long-form content asset into emails, social posts, article outlines, short-form scripts, and promotional angles.",
+    };
+  }
+  if (signals.includes("customer support")) {
+    return {
+      name: "AI Customer Reply Drafting Assistant",
+      description: "Draft support replies based on company policies, FAQs, and previous examples while requiring human approval before sending.",
+    };
+  }
+  if (signals.includes("data") || signals.includes("report")) {
+    return automationScore < 40
+      ? {
+          name: "AI Operations Assistant",
+          description: "Turn recurring admin tasks into documented workflows, checklists, summaries, and action items.",
+        }
+      : {
+          name: "AI Decision Dashboard Assistant",
+          description: "Summarize reports, highlight key changes, explain what matters, and recommend next actions for human review.",
+        };
+  }
+  return {
+    name: "AI Operations Assistant",
+    description: "Turn recurring admin tasks into documented workflows, checklists, summaries, and action items.",
+  };
 }
 
 function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
@@ -311,60 +324,48 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
     teamPrivacyImplementation: "team privacy and implementation",
   };
   const entries = Object.entries(scores) as Array<[CategoryKey, number]>;
-  const strengths = entries
-    .filter(([, score]) => score >= 70)
-    .map(([key]) => `Strong ${labels[key]} foundation`);
+  const strengths = entries.filter(([, score]) => score >= 70).map(([key]) => `Strong ${labels[key]} foundation`);
   const gaps = entries
-    .filter(([, score]) => score < 55)
-    .map(([key]) => `Improve ${labels[key]} before scaling AI`);
-
-  if (flags.length > 0) gaps.push("Create privacy rules before using sensitive business data with AI");
+    .sort((a, b) => a[1] - b[1])
+    .slice(0, 3)
+    .map(([key]) => `Improve ${labels[key]} to raise your AI Business IQ`);
+  if (flags.length > 0) gaps.unshift("Stop sensitive data from entering unapproved AI tools");
   return {
     strengths: strengths.length ? strengths : ["You have enough signal to choose a focused first AI project"],
-    gaps: gaps.length ? gaps : ["Tighten measurement and documentation so AI wins become repeatable"],
+    gaps,
   };
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Execution Score is ${result.overallScore}/100 (${result.profile}). First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}). First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
     .join(", ")}. Bring this roadmap to your AI Execution Accelerator session with Kai.`;
 }
 
 export function calculateResult(answers: Answers, name: string): QuizResult {
-  const buckets: Record<CategoryKey, number[]> = {
-    aiBasics: [],
-    prompting: [],
-    verification: [],
-    businessStrategy: [],
-    automationTools: [],
-    teamPrivacyImplementation: [],
-  };
+  const categoryPoints = emptyCategoryTotals();
+  let rawScore = 0;
 
-  for (const [questionId, categories] of Object.entries(categoryMap)) {
-    const score = answerScore(questionId, answers[questionId]);
-    for (const category of categories) buckets[category].push(score);
+  for (const question of quizQuestions) {
+    const contribution = scoreQuestion(question.id, answers);
+    rawScore += contribution.rawScore;
+    for (const category of categoryKeys) categoryPoints[category] += contribution.categoryPoints[category];
   }
+  categoryPoints.teamPrivacyImplementation = Math.max(0, categoryPoints.teamPrivacyImplementation);
 
+  const maxPoints = maxCategoryPoints();
   const categoryScores = Object.fromEntries(
-    Object.entries(buckets).map(([key, values]) => [
-      key,
-      Math.round((values.reduce((sum, value) => sum + value, 0) / Math.max(values.length, 1) / 4) * 100),
+    categoryKeys.map((category) => [
+      category,
+      Math.round((categoryPoints[category] / Math.max(1, maxPoints[category])) * 100),
     ]),
   ) as Record<CategoryKey, number>;
 
-  const overallScore = Math.round(
-    categoryScores.aiBasics * 0.15 +
-      categoryScores.prompting * 0.15 +
-      categoryScores.verification * 0.15 +
-      categoryScores.businessStrategy * 0.25 +
-      categoryScores.automationTools * 0.15 +
-      categoryScores.teamPrivacyImplementation * 0.15,
-  );
-  const profile = profileFor(overallScore);
+  const overallScore = iqFromRaw(rawScore);
+  const profile = tierFor(overallScore);
   const flags = riskFlags(answers);
-  const { recommendedModules, skippedModules } = routeModules(categoryScores, flags, answers);
+  const { recommendedModules, skippedModules } = routeModules(profile, categoryScores, flags);
   const recommendedProject = firstProject(answers, categoryScores.automationTools);
   const { strengths, gaps } = insightLists(categoryScores, flags);
 
@@ -373,7 +374,9 @@ export function calculateResult(answers: Answers, name: string): QuizResult {
     email: null,
     answers,
     categoryScores,
+    rawScore: Math.round(rawScore),
     overallScore,
+    percentile: percentileForIq(overallScore),
     profile,
     profileDescription: profileDescription(profile),
     strengths,

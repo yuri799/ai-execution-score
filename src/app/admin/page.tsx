@@ -29,7 +29,7 @@ export default function AdminPage() {
   }, []);
 
   const csv = useMemo(() => {
-    const header = ["Name", "Overall score", "Profile", "Recommended first project", "Date submitted"];
+    const header = ["Name", "AI Business IQ", "Tier", "Recommended first project", "Date submitted"];
     const body = rows.map((row) => [
       row.name,
       row.overallScore,
@@ -45,7 +45,7 @@ export default function AdminPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "ai-execution-score-submissions.csv";
+    link.download = "ai-business-iq-submissions.csv";
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -77,8 +77,8 @@ export default function AdminPage() {
               <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
                 <tr>
                   <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Overall score</th>
-                  <th className="px-4 py-3">Profile</th>
+                  <th className="px-4 py-3">AI Business IQ</th>
+                  <th className="px-4 py-3">Tier</th>
                   <th className="px-4 py-3">Recommended first project</th>
                   <th className="px-4 py-3">Date submitted</th>
                 </tr>

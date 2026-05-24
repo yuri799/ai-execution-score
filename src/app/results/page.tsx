@@ -6,6 +6,7 @@ import { ActionPlanChecklist } from "@/components/ActionPlanChecklist";
 import { CategoryScoreBar } from "@/components/CategoryScoreBar";
 import { CoursePathCard } from "@/components/CoursePathCard";
 import { DownloadReportButton } from "@/components/DownloadReportButton";
+import { IqBellCurve } from "@/components/IqBellCurve";
 import { ProfileBadge } from "@/components/ProfileBadge";
 import { ProjectRecommendationCard } from "@/components/ProjectRecommendationCard";
 import { ScoreCard } from "@/components/ScoreCard";
@@ -24,7 +25,7 @@ export default function ResultsPage() {
   const [result, setResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("ai-execution-latest-result");
+    const saved = localStorage.getItem("ai-business-iq-latest-result") ?? localStorage.getItem("ai-execution-latest-result");
     if (saved) setResult(JSON.parse(saved));
   }, []);
 
@@ -33,7 +34,7 @@ export default function ResultsPage() {
       <main className="grid min-h-screen place-items-center bg-mist px-6">
         <div className="max-w-md rounded-lg border border-line bg-white p-8 text-center shadow-soft">
           <h1 className="text-2xl font-semibold text-navy">No result yet</h1>
-          <p className="mt-3 text-slate-600">Take the quiz first so the app can generate your AI Execution Score.</p>
+          <p className="mt-3 text-slate-600">Take the quiz first so the app can generate your AI Business IQ.</p>
           <Link href="/quiz" className="mt-6 inline-flex rounded-lg bg-electric px-5 py-3 text-sm font-bold text-white">
             Start Quiz
           </Link>
@@ -48,7 +49,7 @@ export default function ResultsPage() {
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-electric">Your roadmap</p>
-            <h1 className="mt-2 text-4xl font-semibold text-navy">AI Execution Score</h1>
+            <h1 className="mt-2 text-4xl font-semibold text-navy">Your AI Business IQ</h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <DownloadReportButton result={result} />
@@ -56,8 +57,18 @@ export default function ResultsPage() {
         </div>
 
         <section className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-          <ScoreCard score={result.overallScore} />
+          <ScoreCard score={result.overallScore} tierLabel={result.profile} />
           <ProfileBadge profile={result.profile} description={result.profileDescription} />
+        </section>
+
+        <section className="mt-6">
+          <IqBellCurve score={result.overallScore} />
+        </section>
+
+        <section className="mt-6 rounded-lg border border-line bg-white p-6 shadow-sm">
+          <p className="text-base leading-7 text-slate-700">
+            Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. The detailed breakdown below shows your strengths and your three biggest gaps - and your personalized PDF course is built around closing those gaps.
+          </p>
         </section>
 
         <section className="mt-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">

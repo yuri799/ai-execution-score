@@ -15,17 +15,18 @@ function optionLabel(index: number) {
 export function QuizQuestion({ question, value, onChange }: QuizQuestionProps) {
   const selected = Array.isArray(value) ? value : [];
 
-  function toggle(option: string) {
+  function toggle(optionId: string) {
     if (question.type === "single") {
-      onChange(option);
+      onChange(optionId);
       return;
     }
-    const isNone = option === "None of these" || option === "None without review";
-    const next = selected.includes(option)
-      ? selected.filter((item) => item !== option)
-      : [...selected.filter((item) => !(isNone || item.startsWith("None"))), option];
-    if (question.maxSelections && next.length > question.maxSelections) return;
-    onChange(isNone ? [option] : next.filter((item) => !item.startsWith("None")));
+    const option = question.options.find((item) => item.id === optionId);
+    const isNone = option?.label.toLowerCase().startsWith("none") ?? false;
+    const noneIds = question.options.filter((item) => item.label.toLowerCase().startsWith("none")).map((item) => item.id);
+    const next = selected.includes(optionId)
+      ? selected.filter((item) => item !== optionId)
+      : [...selected.filter((item) => !(isNone || noneIds.includes(item))), optionId];
+    onChange(isNone ? [optionId] : next.filter((item) => !noneIds.includes(item)));
   }
 
   return (
@@ -37,13 +38,12 @@ export function QuizQuestion({ question, value, onChange }: QuizQuestionProps) {
 
       <div className="grid gap-3">
         {question.options.map((option, index) => {
-          const active = question.type === "single" ? value === `${optionLabel(index)}. ${option}` : selected.includes(option);
-          const answer = question.type === "single" ? `${optionLabel(index)}. ${option}` : option;
+          const active = question.type === "single" ? value === option.id : selected.includes(option.id);
           return (
             <button
-              key={option}
+              key={option.id}
               type="button"
-              onClick={() => toggle(answer)}
+              onClick={() => toggle(option.id)}
               className={`flex items-start gap-3 rounded-lg border p-4 text-left transition ${
                 active ? "border-electric bg-blue-50 text-navy" : "border-line bg-white text-slate-700 hover:border-electric/60"
               }`}
@@ -51,7 +51,7 @@ export function QuizQuestion({ question, value, onChange }: QuizQuestionProps) {
               <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? "bg-electric text-white" : "bg-slate-100 text-slate-500"}`}>
                 {question.type === "single" ? optionLabel(index) : active ? "+" : ""}
               </span>
-              <span className="text-sm font-medium leading-6">{option}</span>
+              <span className="text-sm font-medium leading-6">{option.label}</span>
             </button>
           );
         })}

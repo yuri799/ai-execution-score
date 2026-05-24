@@ -1,6 +1,6 @@
-# AI Execution Score
+# AI Business IQ
 
-Responsive MVP for an AI readiness quiz, score dashboard, course roadmap, course PDF, and simple admin export.
+Responsive MVP for an AI readiness quiz, IQ dashboard, course roadmap, course PDF, and simple admin export.
 
 ## Run
 

@@ -12,12 +12,19 @@ export type AnswerValue = string | string[];
 
 export type Answers = Record<string, AnswerValue>;
 
+export type QuestionOption = {
+  id: string;
+  label: string;
+  points: number;
+  category: CategoryKey;
+};
+
 export type Question = {
   id: string;
   title: string;
   type: QuestionType;
-  options: string[];
-  maxSelections?: number;
+  options: QuestionOption[];
+  maxPoints?: number;
 };
 
 export type CategoryScores = Record<CategoryKey, number>;
@@ -39,7 +46,9 @@ export type QuizResult = {
   email?: string | null;
   answers: Answers;
   categoryScores: CategoryScores;
+  rawScore: number;
   overallScore: number;
+  percentile: number;
   profile: string;
   profileDescription: string;
   strengths: string[];

@@ -20,12 +20,12 @@ export default function QuizPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("ai-execution-answers");
+    const saved = localStorage.getItem("ai-business-iq-answers");
     if (saved) setAnswers(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("ai-execution-answers", JSON.stringify(answers));
+    localStorage.setItem("ai-business-iq-answers", JSON.stringify(answers));
   }, [answers]);
 
   const isContactStep = step === quizQuestions.length;
@@ -53,12 +53,12 @@ export default function QuizPage() {
     setError("");
     try {
       const result = calculateResult(answers, name.trim());
-      localStorage.setItem("ai-execution-latest-result", JSON.stringify(result));
+      localStorage.setItem("ai-business-iq-latest-result", JSON.stringify(result));
       await saveQuizResult(result);
       router.push("/results");
     } catch (saveError) {
       const result = calculateResult(answers, name.trim());
-      localStorage.setItem("ai-execution-latest-result", JSON.stringify(result));
+      localStorage.setItem("ai-business-iq-latest-result", JSON.stringify(result));
       setError(saveError instanceof Error ? `Saved locally. Supabase error: ${saveError.message}` : "Saved locally. Supabase could not be reached.");
       router.push("/results");
     } finally {
@@ -74,7 +74,7 @@ export default function QuizPage() {
             <ArrowLeft size={18} />
             Home
           </Link>
-          <span className="text-sm font-bold text-navy">AI Execution Score</span>
+          <span className="text-sm font-bold text-navy">AI Business IQ</span>
         </div>
 
         <ProgressBar value={isContactStep ? 100 : progress} label={isContactStep ? "Final step" : `Question ${step + 1} of ${quizQuestions.length}`} />
@@ -84,7 +84,7 @@ export default function QuizPage() {
             <section className="rounded-lg border border-line bg-white p-6 shadow-soft">
               <p className="text-sm font-semibold uppercase tracking-wide text-electric">Almost done</p>
               <h1 className="mt-2 text-3xl font-semibold text-navy">Ready for your score?</h1>
-              <p className="mt-3 max-w-2xl text-slate-600">Enter your name and the app will generate your score, course path, and downloadable course PDF.</p>
+              <p className="mt-3 max-w-2xl text-slate-600">Enter your name and the app will generate your AI Business IQ, course path, and downloadable course PDF.</p>
               <div className="mt-8 grid gap-4 sm:max-w-md">
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   Name
