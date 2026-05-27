@@ -69,6 +69,7 @@ export const quizQuestions: Question[] = [
     ["I assume AI just isn't useful for this and stop.", 0],
     ["I try the same prompt in a different tool.", 3],
     ["I rewrite the prompt with more context and try again.", 7],
+    ["I explain to AI in simple words what I want and ask it to create the best prompt for me.", 8],
     ["I iterate - add context, examples, constraints, ask it to critique its own output, then refine.", 10],
   ]),
   single("q8", "How long is a typical prompt you send to AI?", "prompting", [

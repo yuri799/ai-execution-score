@@ -136,6 +136,10 @@ export default function ResultsPage() {
           </div>
         </section>
 
+        <section className="mt-10 flex justify-center rounded-lg border border-electric/30 bg-blue-50 p-6 shadow-sm">
+          <DownloadReportButton result={result} />
+        </section>
+
         <section className="mt-10">
           <h2 className="mb-5 text-3xl font-semibold text-navy">7-day AI action plan</h2>
           <ActionPlanChecklist items={result.actionPlan} />
