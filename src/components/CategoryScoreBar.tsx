@@ -4,9 +4,9 @@ type CategoryScoreBarProps = {
 };
 
 function barColor(score: number) {
-  if (score >= 70) return "bg-emerald-400";
-  if (score >= 40) return "bg-amber-400";
-  return "bg-red-400";
+  if (score >= 70) return "#34d399";
+  if (score >= 40) return "#fbbf24";
+  return "#f87171";
 }
 
 export function CategoryScoreBar({ label, score }: CategoryScoreBarProps) {
@@ -20,8 +20,8 @@ export function CategoryScoreBar({ label, score }: CategoryScoreBarProps) {
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
         <div
-          className={`h-full rounded-full ${barColor(score)}`}
-          style={{ width: `${w}%`, transition: "width 600ms ease-out" }}
+          className="h-full rounded-full"
+          style={{ width: `${w}%`, background: barColor(score), transition: "width 600ms ease-out" }}
         />
       </div>
     </div>

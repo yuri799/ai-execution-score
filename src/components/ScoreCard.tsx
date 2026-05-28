@@ -28,11 +28,11 @@ export function ScoreCard({ score, label = "AI Business IQ", suffix = "IQ", maxS
     requestAnimationFrame(tick);
   }, [score, maxScore]);
 
-  const barColor =
-    score >= 160 ? "bg-gradient-to-r from-amber-400 to-yellow-300" :
-    score >= 115 ? "bg-gradient-to-r from-emerald-400 to-green-300" :
-    score >= 85  ? "bg-gradient-to-r from-electric to-indigo" :
-    "bg-gradient-to-r from-slate-400 to-slate-300";
+  const barGradient =
+    score >= 160 ? "linear-gradient(90deg, #fbbf24, #fde047)" :
+    score >= 115 ? "linear-gradient(90deg, #34d399, #86efac)" :
+    score >= 85  ? "linear-gradient(90deg, #1f7bff, #4f46e5)" :
+    "linear-gradient(90deg, #94a3b8, #cbd5e1)";
 
   return (
     <div className="rounded-xl bg-gradient-to-br from-navy to-ink p-6 text-white shadow-soft sm:p-8">
@@ -43,7 +43,7 @@ export function ScoreCard({ score, label = "AI Business IQ", suffix = "IQ", maxS
       </div>
       {tierLabel ? <p className="mt-3 text-base font-semibold text-blue-100">{tierLabel}</p> : null}
       <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-white/15">
-        <div className={`h-full rounded-full transition-all duration-700 ${barColor}`} style={{ width: `${barWidth}%` }} />
+        <div className="h-full rounded-full" style={{ width: `${barWidth}%`, background: barGradient, transition: "width 700ms ease-out" }} />
       </div>
     </div>
   );
