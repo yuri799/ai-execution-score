@@ -75,11 +75,6 @@ export function IqBellCurve({ score }: IqBellCurveProps) {
           strokeWidth="3.5"
           strokeLinecap="round"
         />
-        <line x1={xFor(100)} x2={xFor(100)} y1="72" y2={baseline + 6} stroke="#94a3b8" strokeDasharray="5 7" strokeWidth="1.5" />
-        <text x={xFor(100)} y="76" textAnchor="middle" fill="#64748b" fontSize="15" fontWeight="700">
-          Average
-        </text>
-
         <g filter="url(#glow)">
           <line className="iq-marker-line" x1={markerX} x2={markerX} y1={baseline + 8} y2={markerY - 10} stroke="#1f7bff" strokeWidth="5" strokeLinecap="round" />
           <circle className="iq-marker-dot" cx={markerX} cy={markerY - 15} r="11" fill="#1f7bff" />
@@ -89,14 +84,22 @@ export function IqBellCurve({ score }: IqBellCurveProps) {
         </text>
 
         <line x1={leftPad} x2={width - rightPad} y1={baseline + 18} y2={baseline + 18} stroke="#cbd5e1" strokeWidth="1" />
-        {ticks.map((tick) => (
-          <g key={tick}>
-            <line x1={xFor(tick)} x2={xFor(tick)} y1={baseline + 12} y2={baseline + 24} stroke="#94a3b8" strokeWidth="1" />
-            <text x={xFor(tick)} y={baseline + 46} textAnchor="middle" fill="#64748b" fontSize="14" fontWeight="700">
-              {tick}
-            </text>
-          </g>
-        ))}
+        {ticks.map((tick) => {
+          const isAverage = tick === 100;
+          return (
+            <g key={tick}>
+              <line x1={xFor(tick)} x2={xFor(tick)} y1={baseline + 12} y2={baseline + 24} stroke="#94a3b8" strokeWidth="1" strokeDasharray={isAverage ? "5 7" : undefined} />
+              {isAverage ? (
+                <text x={xFor(tick)} y={baseline + 42} textAnchor="middle" fill="#64748b" fontSize="12" fontWeight="700">
+                  Avg
+                </text>
+              ) : null}
+              <text x={xFor(tick)} y={isAverage ? baseline + 60 : baseline + 46} textAnchor="middle" fill="#64748b" fontSize="14" fontWeight="700">
+                {tick}
+              </text>
+            </g>
+          );
+        })}
       </svg>
       <p className="mt-4 text-sm leading-6 text-slate-600">
         The average AI Business IQ across business owners is 100. The top 1% scores above 190. To stay ahead of the curve, you want to be in the top 5% (160+).
