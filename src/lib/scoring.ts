@@ -223,9 +223,11 @@ function profileDescription(profile: string) {
   return "You are ahead of most business owners. The opportunity now is disciplined execution: better systems, sharper automation, safer team rollout, and higher-ROI AI projects.";
 }
 
+const riskyOptionIds = ["q25_a", "q25_b", "q25_c", "q25_d", "q25_e", "q25_f"];
+
 function riskFlags(answers: Answers) {
   return selectedOptions("q25", answers)
-    .filter((option) => option.points < 0)
+    .filter((option) => riskyOptionIds.includes(option.id))
     .map((option) => option.label);
 }
 
@@ -369,6 +371,20 @@ export function calculateResult(answers: Answers, name: string): QuizResult {
   const recommendedProject = firstProject(answers, categoryScores.automationTools);
   const { strengths, gaps } = insightLists(categoryScores, flags);
 
+  const sortedGaps = Object.entries(categoryScores)
+    .sort(([, a], [, b]) => a - b)
+    .slice(0, 3)
+    .map(([key]) => key as CategoryKey);
+
+  const dynamicLessons: Record<CategoryKey, string> = {
+    aiBasics: "Plain-English breakdown of every AI buzzword",
+    prompting: "Prompting 101 — context, constraints, and examples that get better output",
+    verification: "When to trust AI and when to verify",
+    businessStrategy: "How to choose your first AI project",
+    automationTools: "No-code AI tools — n8n, Make, Zapier with AI in the loop",
+    teamPrivacyImplementation: "What not to paste into AI tools",
+  };
+
   const base = {
     name,
     email: null,
@@ -383,11 +399,7 @@ export function calculateResult(answers: Answers, name: string): QuizResult {
     gaps,
     skippedModules,
     recommendedModules,
-    optionalReviewLessons: [
-      "When to trust AI and when to verify",
-      "What not to paste into AI tools",
-      "How to choose your first AI project",
-    ],
+    optionalReviewLessons: sortedGaps.map((key) => dynamicLessons[key]),
     recommendedProject,
     actionPlan,
     riskFlags: flags,

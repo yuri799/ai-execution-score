@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { loadAdminResults } from "@/lib/supabase";
 import type { ProjectRecommendation } from "@/lib/types";
 
@@ -16,6 +16,13 @@ type AdminRow = {
 
 function csvEscape(value: string | number) {
   return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+function scoreColor(score: number) {
+  if (score >= 160) return "text-amber-500";
+  if (score >= 115) return "text-emerald-500";
+  if (score >= 85) return "text-electric";
+  return "text-slate-500";
 }
 
 export default function AdminPage() {
@@ -51,52 +58,51 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-mist">
-      <div className="mx-auto max-w-6xl px-6 py-8 lg:px-8">
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-electric">Admin</p>
-            <h1 className="mt-2 text-4xl font-semibold text-navy">Quiz submissions</h1>
-          </div>
-          <div className="flex gap-3">
-            <Link href="/" className="rounded-lg border border-line bg-white px-5 py-3 text-sm font-bold text-navy">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-navy">
+              <ArrowLeft size={18} />
               Home
             </Link>
-            <button onClick={exportCsv} className="inline-flex items-center gap-2 rounded-lg bg-electric px-5 py-3 text-sm font-bold text-white">
-              <Download size={18} />
-              Export CSV
-            </button>
+            <p className="mt-3 text-sm font-bold uppercase tracking-wide text-electric">Admin</p>
+            <h1 className="mt-1 text-3xl font-semibold text-navy sm:text-4xl">Quiz submissions</h1>
           </div>
+          <button onClick={exportCsv} className="btn-gradient inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-bold text-white">
+            <Download size={18} />
+            Export CSV
+          </button>
         </div>
 
         {error ? <p className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</p> : null}
 
-        <div className="overflow-hidden rounded-lg border border-line bg-white shadow-soft">
+        <div className="overflow-hidden rounded-xl border border-white/60 glass-card shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
+              <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">AI Business IQ</th>
-                  <th className="px-4 py-3">Tier</th>
-                  <th className="px-4 py-3">Recommended first project</th>
-                  <th className="px-4 py-3">Date submitted</th>
+                  <th className="px-5 py-3.5">Name</th>
+                  <th className="px-5 py-3.5">AI Business IQ</th>
+                  <th className="px-5 py-3.5">Tier</th>
+                  <th className="px-5 py-3.5">Recommended first project</th>
+                  <th className="px-5 py-3.5">Date submitted</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-slate-100">
                 {rows.map((row, index) => (
-                  <tr key={`${row.name}-${row.createdAt}-${index}`}>
-                    <td className="px-4 py-4 font-semibold text-navy">{row.name}</td>
-                    <td className="px-4 py-4 font-bold text-electric">{row.overallScore}</td>
-                    <td className="px-4 py-4 text-slate-700">{row.profile}</td>
-                    <td className="px-4 py-4 text-slate-700">{row.recommendedProject?.name}</td>
-                    <td className="px-4 py-4 text-slate-600">{new Date(row.createdAt).toLocaleString()}</td>
+                  <tr key={`${row.name}-${row.createdAt}-${index}`} className="transition-colors hover:bg-slate-50/50">
+                    <td className="px-5 py-4 font-semibold text-navy">{row.name}</td>
+                    <td className={`px-5 py-4 font-bold ${scoreColor(row.overallScore)}`}>{row.overallScore}</td>
+                    <td className="px-5 py-4 text-slate-700">{row.profile}</td>
+                    <td className="px-5 py-4 text-slate-700">{row.recommendedProject?.name}</td>
+                    <td className="px-5 py-4 text-slate-500">{new Date(row.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          {rows.length === 0 ? <p className="p-8 text-center text-slate-600">No submissions yet.</p> : null}
+          {rows.length === 0 ? <p className="p-10 text-center text-slate-500">No submissions yet.</p> : null}
         </div>
       </div>
     </main>

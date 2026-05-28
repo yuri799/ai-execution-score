@@ -13,7 +13,7 @@ export function DownloadReportButton({ result }: DownloadReportButtonProps) {
     <button
       type="button"
       onClick={() => downloadPdfReport(result)}
-      className="inline-flex items-center justify-center gap-2 rounded-lg bg-electric px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-blue-600"
+      className="btn-gradient inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-bold text-white"
     >
       <Download size={18} />
       Download Course PDF

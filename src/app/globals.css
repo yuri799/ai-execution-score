@@ -4,6 +4,7 @@
 
 :root {
   color-scheme: light;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -12,8 +13,10 @@
 
 body {
   margin: 0;
-  background: #f4f7fb;
+  background: linear-gradient(135deg, #f4f7fb 0%, #edf2f9 30%, #f0f5fc 60%, #f4f7fb 100%);
+  background-attachment: fixed;
   color: #0b172a;
+  font-family: var(--font-sans);
 }
 
 a {
@@ -21,6 +24,59 @@ a {
   text-decoration: none;
 }
 
+/* ── Quiz card transitions ── */
+@keyframes quiz-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes quiz-card-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.985);
+  }
+}
+
+.quiz-card-enter {
+  animation: quiz-card-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.quiz-card-exit {
+  animation: quiz-card-out 220ms ease-in both;
+}
+
+/* ── Score counter ── */
+@keyframes score-count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.score-animate {
+  animation: score-count-up 500ms ease-out both;
+}
+
+/* ── Progress dot pulse ── */
+@keyframes dot-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.dot-current {
+  animation: dot-pop 500ms ease-out;
+}
+
+/* ── IQ bell curve ── */
 .iq-marker-line {
   animation: iq-line-grow 650ms ease-out both;
   transform-box: fill-box;
@@ -32,23 +88,57 @@ a {
 }
 
 @keyframes iq-line-grow {
-  from {
-    opacity: 0;
-    transform: scaleY(0);
-  }
-  to {
-    opacity: 1;
-    transform: scaleY(1);
-  }
+  from { opacity: 0; transform: scaleY(0); }
+  to   { opacity: 1; transform: scaleY(1); }
 }
 
 @keyframes iq-dot-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Glass card utility ── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ── Gradient button hover glow ── */
+.btn-gradient {
+  background: linear-gradient(135deg, #1f7bff 0%, #4f46e5 100%);
+  box-shadow: 0 4px 18px rgba(31, 123, 255, 0.28);
+  transition: box-shadow 200ms ease, transform 150ms ease;
+}
+
+.btn-gradient:hover {
+  box-shadow: 0 6px 24px rgba(31, 123, 255, 0.38);
+}
+
+.btn-gradient:active {
+  transform: scale(0.97);
+}
+
+/* ── Smooth hover lift for cards ── */
+.card-lift {
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.card-lift:hover {
+  box-shadow: 0 12px 36px rgba(7, 20, 38, 0.09);
+  transform: translateY(-2px);
+}
+
+/* ── Shimmer loading skeleton ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
 }

@@ -58,12 +58,12 @@ export const quizQuestions: Question[] = [
       option("q5_i", "None of the above", 0, "aiBasics"),
     ],
   },
-  single("q6", "About how often do you use AI in a typical week?", "aiBasics", [
-    ["Never or almost never.", 0],
-    ["Once or twice a week.", 2],
-    ["A few times a week.", 4],
-    ["Daily - at least 5 days out of 7.", 7],
-    ["Multiple times a day, every day.", 10],
+  single("q6", "Which of these best describes how AI tools are priced?", "aiBasics", [
+    ["AI is free — the tools are just like Google.", 0],
+    ["Most tools charge a fixed monthly fee, and that's it.", 3],
+    ["Paid tiers exist, but I don't know how API or usage-based pricing works.", 5],
+    ["Subscription tiers for chat, plus pay-per-token for API and automation usage.", 8],
+    ["Subscriptions for humans, token-based pricing for API calls, and wrapper tools that mark up the underlying model cost.", 10],
   ]),
   single("q7", "When you ask AI for something and the output is generic or weak, what do you usually do?", "prompting", [
     ["I assume AI just isn't useful for this and stop.", 0],
@@ -120,10 +120,11 @@ export const quizQuestions: Question[] = [
     ["Verify every single one exists before citing any of them.", 10],
   ]),
   single("q14", "Have you ever caught AI giving you something materially wrong (a wrong number, a fake quote, a non-existent tool feature, etc.)?", "verification", [
-    ["No, never noticed.", 0],
+    ["No, I rarely check or haven't used AI enough to notice.", 0],
     ["Maybe once or twice.", 3],
-    ["Yes, multiple times - I expect it now.", 8],
+    ["Yes, multiple times — I expect it now.", 8],
     ["Yes, and I now have a habit of checking everything specific.", 10],
+    ["Rarely — I scope tasks carefully and always verify, so I catch it before it becomes a problem.", 9],
   ]),
   single("q15", "How clearly can you name the #1 highest-ROI place AI could help your business right now?", "businessStrategy", [
     ["I have no idea.", 0],
@@ -159,11 +160,11 @@ export const quizQuestions: Question[] = [
     ["About half.", 6],
     ["75% or more - AI is in the loop on almost everything we publish.", 10],
   ]),
-  single("q19", "What's your view on building a \"custom AI\" for your business?", "businessStrategy", [
-    ["I think I need one.", 3],
-    ["I have no opinion.", 2],
-    ["I'd consider it if the ROI was clear.", 6],
-    ["Probably overkill - off-the-shelf tools plus good prompts will solve most things.", 10],
+  single("q19", "When is building a custom AI model or application actually warranted for a small business?", "businessStrategy", [
+    ["Most businesses need one to stay competitive.", 0],
+    ["I'm not sure what determines whether you need one or not.", 2],
+    ["When off-the-shelf tools can't handle a specific, high-volume, high-ROI workflow unique to your business.", 7],
+    ["Almost never — off-the-shelf tools plus good prompts and a no-code automation layer solve most use cases for under $100/month.", 10],
   ]),
   single("q20", "Do you currently use any automation platform (Zapier, Make, n8n, etc.)?", "automationTools", [
     ["I don't know what those are.", 0],
@@ -213,12 +214,12 @@ export const quizQuestions: Question[] = [
     type: "multi",
     maxPoints: 10,
     options: [
-      option("q25_a", "Client confidential information or contracts under NDA.", -3, "teamPrivacyImplementation"),
-      option("q25_b", "Credit card or bank account numbers.", -3, "teamPrivacyImplementation"),
-      option("q25_c", "Health information / PHI.", -3, "teamPrivacyImplementation"),
-      option("q25_d", "Login credentials, passwords, or API keys.", -3, "teamPrivacyImplementation"),
-      option("q25_e", "Proprietary source code from a client.", -2, "teamPrivacyImplementation"),
-      option("q25_f", "Internal trade secrets or unannounced plans.", -2, "teamPrivacyImplementation"),
+      option("q25_a", "Client confidential information or contracts under NDA.", 0, "teamPrivacyImplementation"),
+      option("q25_b", "Credit card or bank account numbers.", 0, "teamPrivacyImplementation"),
+      option("q25_c", "Health information / PHI.", 0, "teamPrivacyImplementation"),
+      option("q25_d", "Login credentials, passwords, or API keys.", 0, "teamPrivacyImplementation"),
+      option("q25_e", "Proprietary source code from a client.", 0, "teamPrivacyImplementation"),
+      option("q25_f", "Internal trade secrets or unannounced plans.", 0, "teamPrivacyImplementation"),
       option("q25_g", "None of these - we're careful.", 10, "teamPrivacyImplementation"),
     ],
   },
