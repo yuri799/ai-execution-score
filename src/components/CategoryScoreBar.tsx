@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 type CategoryScoreBarProps = {
   label: string;
   score: number;
@@ -14,12 +10,7 @@ function barColor(score: number) {
 }
 
 export function CategoryScoreBar({ label, score }: CategoryScoreBarProps) {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setWidth(score), 120);
-    return () => clearTimeout(timer);
-  }, [score]);
+  const w = Math.max(score, 4);
 
   return (
     <div>
@@ -29,8 +20,8 @@ export function CategoryScoreBar({ label, score }: CategoryScoreBarProps) {
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
         <div
-          className={`h-full rounded-full transition-all duration-700 ease-out ${barColor(score)}`}
-          style={{ width: `${width}%` }}
+          className={`h-full rounded-full ${barColor(score)}`}
+          style={{ width: `${w}%`, transition: "width 600ms ease-out" }}
         />
       </div>
     </div>
