@@ -80,8 +80,6 @@ export default function QuizPage() {
         ? currentAnswer.length > 0
         : Boolean(currentAnswer);
 
-  const categories = useMemo(() => quizQuestions.map((q) => q.options[0]?.category ?? "aiBasics"), []);
-
   function setAnswer(value: AnswerValue) {
     setError("");
     setAnswers((current) => ({ ...current, [question.id]: value }));
@@ -150,9 +148,6 @@ export default function QuizPage() {
         <ProgressBar
           value={isReviewStep || isContactStep ? 100 : progress}
           label={isContactStep ? "Final step" : isReviewStep ? "Review your answers" : `Question ${step + 1} of ${quizQuestions.length}`}
-          total={quizQuestions.length}
-          current={isReviewStep ? quizQuestions.length : step}
-          categories={categories}
         />
 
         <div className="mt-8">
