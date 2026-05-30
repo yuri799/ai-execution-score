@@ -101,30 +101,21 @@ const categoryKeys: CategoryKey[] = ["aiBasics", "prompting", "verification", "b
 
 const iqAnchors = [
   [0, 50],
-  [30, 70],
-  [60, 85],
-  [90, 95],
-  [120, 100],
-  [150, 110],
-  [180, 125],
-  [210, 145],
-  [240, 175],
-  [260, 200],
-  [270, 225],
+  [20, 70],
+  [40, 85],
+  [60, 100],
+  [80, 115],
+  [100, 135],
+  [120, 160],
+  [135, 190],
+  [145, 210],
+  [150, 225],
 ] as const;
 
 function selectedIds(answer: unknown): string[] {
   if (Array.isArray(answer)) return answer;
   if (typeof answer === "string" && answer.length > 0) return [answer];
   return [];
-}
-
-function optionText(optionId: string) {
-  for (const question of quizQuestions) {
-    const match = question.options.find((option) => option.id === optionId);
-    if (match) return match.label;
-  }
-  return "";
 }
 
 function selectedOptions(questionId: string, answers: Answers) {
@@ -158,7 +149,7 @@ function scoreQuestion(questionId: string, answers: Answers) {
   const question = quizQuestions.find((item) => item.id === questionId);
   if (!question) return { rawScore: 0, categoryPoints: emptyCategoryTotals() };
   const options = selectedOptions(questionId, answers);
-  return cappedQuestionContribution(options, question.maxPoints, questionId === "q25");
+  return cappedQuestionContribution(options, question.maxPoints);
 }
 
 function maxCategoryPoints() {
@@ -169,20 +160,28 @@ function maxCategoryPoints() {
       totals[best.category] += Math.max(0, best.points);
     } else {
       const positiveOptions = question.options.filter((option) => option.points > 0);
-      const { categoryPoints } = cappedQuestionContribution(positiveOptions, question.maxPoints, question.id === "q25");
+      const { categoryPoints } = cappedQuestionContribution(positiveOptions, question.maxPoints);
       for (const category of categoryKeys) totals[category] += categoryPoints[category];
     }
   }
   return totals;
 }
 
+function maxRawPoints() {
+  return quizQuestions.reduce((sum, question) => {
+    const best = question.options.reduce((current, option) => (option.points > current.points ? option : current), question.options[0]);
+    return sum + Math.max(0, best.points);
+  }, 0);
+}
+
 function iqFromRaw(rawScore: number) {
-  const raw = Math.max(0, Math.min(270, rawScore));
+  const maxRaw = maxRawPoints();
+  const scaledRaw = maxRaw > 0 ? (Math.max(0, Math.min(maxRaw, rawScore)) / maxRaw) * 150 : 0;
   for (let i = 0; i < iqAnchors.length - 1; i++) {
     const [rawA, iqA] = iqAnchors[i];
     const [rawB, iqB] = iqAnchors[i + 1];
-    if (raw >= rawA && raw <= rawB) {
-      const progress = (raw - rawA) / (rawB - rawA);
+    if (scaledRaw >= rawA && scaledRaw <= rawB) {
+      const progress = (scaledRaw - rawA) / (rawB - rawA);
       return Math.round(iqA + progress * (iqB - iqA));
     }
   }
@@ -223,12 +222,17 @@ function profileDescription(profile: string) {
   return "You are ahead of most business owners. The opportunity now is disciplined execution: better systems, sharper automation, safer team rollout, and higher-ROI AI projects.";
 }
 
+<<<<<<< HEAD
 const riskyOptionIds = ["q25_a", "q25_b", "q25_c", "q25_d", "q25_e", "q25_f"];
 
 function riskFlags(answers: Answers) {
   return selectedOptions("q25", answers)
     .filter((option) => riskyOptionIds.includes(option.id))
     .map((option) => option.label);
+=======
+function riskFlags() {
+  return [];
+>>>>>>> dd44680 (modifed files)
 }
 
 function course(status: CourseRecommendation["status"], key: keyof typeof modules, reason: string): CourseRecommendation {
@@ -269,50 +273,42 @@ function routeModules(profile: string, scores: Record<CategoryKey, number>, flag
   return { recommendedModules, skippedModules };
 }
 
-function firstProject(answers: Answers, automationScore: number): ProjectRecommendation {
-  const selectedProblems = selectedOptions("q16", answers).map((option) => option.label);
-  const leadSpeed = optionText(selectedIds(answers.q17)[0] ?? "");
-  const contentUse = optionText(selectedIds(answers.q18)[0] ?? "");
-  const signals = [...selectedProblems, leadSpeed, contentUse].join(" ").toLowerCase();
+function firstProject(scores: Record<CategoryKey, number>): ProjectRecommendation {
+  const weakest = (Object.entries(scores) as Array<[CategoryKey, number]>).sort((a, b) => a[1] - b[1])[0]?.[0];
 
-  if (signals.includes("lead") || signals.includes("follow-up")) {
+  if (weakest === "businessStrategy") {
     return {
       name: "AI Lead Follow-Up Assistant",
-      description: "Draft personalized follow-up emails, qualify leads, summarize conversations, and remind the team when a lead needs attention.",
+      description: "Use this first to connect AI decisions to revenue: qualify leads, draft follow-ups, summarize conversations, and keep opportunities from going cold.",
     };
   }
-  if (signals.includes("email")) {
-    return {
-      name: "AI Email Triage Assistant",
-      description: "Sort, summarize, and draft replies for incoming emails while flagging urgent, revenue-related, and relationship-sensitive messages for human review.",
-    };
-  }
-  if (signals.includes("content") || signals.includes("blog") || signals.includes("social")) {
-    return {
-      name: "AI Content Repurposing Workflow",
-      description: "Turn one long-form content asset into emails, social posts, article outlines, short-form scripts, and promotional angles.",
-    };
-  }
-  if (signals.includes("customer support")) {
+  if (weakest === "prompting") {
     return {
       name: "AI Customer Reply Drafting Assistant",
-      description: "Draft support replies based on company policies, FAQs, and previous examples while requiring human approval before sending.",
+      description: "Build a simple workflow that turns customer context into specific, empathetic reply drafts with a human review step before anything goes out.",
     };
   }
-  if (signals.includes("data") || signals.includes("report")) {
-    return automationScore < 40
-      ? {
-          name: "AI Operations Assistant",
-          description: "Turn recurring admin tasks into documented workflows, checklists, summaries, and action items.",
-        }
-      : {
-          name: "AI Decision Dashboard Assistant",
-          description: "Summarize reports, highlight key changes, explain what matters, and recommend next actions for human review.",
-        };
+  if (weakest === "verification") {
+    return {
+      name: "AI Verification Checklist Workflow",
+      description: "Create a repeatable review process for facts, numbers, claims, summaries, and customer-facing outputs before AI work is trusted.",
+    };
+  }
+  if (weakest === "automationTools") {
+    return {
+      name: "AI Operations Assistant",
+      description: "Start with a repeated workflow that uses AI for judgment and automation for routing, while keeping approvals on important actions.",
+    };
+  }
+  if (weakest === "teamPrivacyImplementation") {
+    return {
+      name: "AI Hiring & Review Assistant",
+      description: "Define clear criteria, permissions, and human review steps before using AI to screen applicants, leads, or team workflows.",
+    };
   }
   return {
-    name: "AI Operations Assistant",
-    description: "Turn recurring admin tasks into documented workflows, checklists, summaries, and action items.",
+    name: "AI Report Review Assistant",
+    description: "Use AI to work through long documents section by section, extract risks, and produce a human-reviewed decision summary.",
   };
 }
 
@@ -339,7 +335,7 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}). First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the 15-question scenario assessment. First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
     .join(", ")}. Bring this roadmap to your AI Execution Accelerator session with Kai.`;
@@ -366,9 +362,9 @@ export function calculateResult(answers: Answers, name: string): QuizResult {
 
   const overallScore = iqFromRaw(rawScore);
   const profile = tierFor(overallScore);
-  const flags = riskFlags(answers);
+  const flags = riskFlags();
   const { recommendedModules, skippedModules } = routeModules(profile, categoryScores, flags);
-  const recommendedProject = firstProject(answers, categoryScores.automationTools);
+  const recommendedProject = firstProject(categoryScores);
   const { strengths, gaps } = insightLists(categoryScores, flags);
 
   const sortedGaps = Object.entries(categoryScores)
