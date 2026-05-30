@@ -46,20 +46,6 @@ export default function LandingPage() {
               </a>
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
-<<<<<<< HEAD
-              <div className="border-l border-white/15 pl-4">
-                <p className="text-2xl font-black text-white">27</p>
-                <p className="mt-1 text-sm leading-5 text-slate-300">business-focused questions</p>
-              </div>
-              <div className="border-l border-white/15 pl-4">
-                <p className="text-2xl font-black text-white">6</p>
-                <p className="mt-1 text-sm leading-5 text-slate-300">readiness categories</p>
-              </div>
-              <div className="border-l border-white/15 pl-4">
-                <p className="text-2xl font-black text-white">1</p>
-                <p className="mt-1 text-sm leading-5 text-slate-300">personalized course PDF</p>
-              </div>
-=======
               {[
                 ["15", "scenario questions"],
                 ["6", "readiness categories"],
@@ -70,7 +56,6 @@ export default function LandingPage() {
                   <p className="mt-1 text-sm leading-5 text-slate-300">{label}</p>
                 </div>
               ))}
->>>>>>> dd44680 (modifed files)
             </div>
           </div>
 

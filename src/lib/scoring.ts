@@ -222,17 +222,8 @@ function profileDescription(profile: string) {
   return "You are ahead of most business owners. The opportunity now is disciplined execution: better systems, sharper automation, safer team rollout, and higher-ROI AI projects.";
 }
 
-<<<<<<< HEAD
-const riskyOptionIds = ["q25_a", "q25_b", "q25_c", "q25_d", "q25_e", "q25_f"];
-
-function riskFlags(answers: Answers) {
-  return selectedOptions("q25", answers)
-    .filter((option) => riskyOptionIds.includes(option.id))
-    .map((option) => option.label);
-=======
 function riskFlags() {
   return [];
->>>>>>> dd44680 (modifed files)
 }
 
 function course(status: CourseRecommendation["status"], key: keyof typeof modules, reason: string): CourseRecommendation {
