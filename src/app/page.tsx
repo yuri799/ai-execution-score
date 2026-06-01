@@ -34,12 +34,11 @@ export default function LandingPage() {
             </div>
             <h1 className="max-w-3xl text-5xl font-bold leading-[1.02] sm:text-6xl">Do you feel left behind when it comes to AI?</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              Find out where you stand and how to improve (in less than seven minutes).
+              See exactly where your AI skills stand — and the next move to get ahead.
             </p>
             <div className="mt-8 max-w-2xl">
               <Link href="/quiz" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-sm font-black text-white shadow-soft transition hover:bg-emerald-600">
-                Get Your AI Business IQ Score in Under 7 Minutes
-                <ArrowRight size={18} />
+                Get Your AI Business IQ Score →
               </Link>
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
