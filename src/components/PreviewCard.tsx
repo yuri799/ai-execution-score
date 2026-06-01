@@ -7,7 +7,7 @@ export function PreviewCard() {
   const [displayScore, setDisplayScore] = useState(0);
 
   useEffect(() => {
-    const target = 142;
+    const target = 112;
     const duration = 900;
     const start = performance.now();
     function tick(now: number) {
@@ -27,13 +27,13 @@ export function PreviewCard() {
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Preview result</p>
             <div className="mt-3 flex items-end gap-2">
-              <span className="text-6xl font-black tracking-tight tabular-nums">{displayScore}</span>
+              <span className="text-6xl font-black tracking-tight text-orange-500 tabular-nums">{displayScore}</span>
               <span className="pb-2 text-sm font-bold text-slate-500">IQ</span>
             </div>
-            <p className="mt-2 font-bold text-electric">AI Operator - Top 20%</p>
+            <p className="mt-2 font-bold text-electric">Above Average</p>
           </div>
           <div className="rounded-lg bg-navy px-3 py-2 text-right text-white">
-            <p className="text-xs font-bold uppercase text-blue-200">Target</p>
+            <p className="text-xs font-bold uppercase text-blue-200">Your Target</p>
             <p className="text-2xl font-black">160+</p>
           </div>
         </div>

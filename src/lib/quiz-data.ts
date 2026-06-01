@@ -194,4 +194,14 @@ export const quizQuestions: Question[] = [
     ],
     2,
   ),
+  {
+    id: "q16",
+    title: "Do you have a group of people you meet with regularly to bounce AI ideas off of?",
+    type: "single",
+    options: [
+      option("q16_a", "Yes, I meet with them regularly.", "teamPrivacyImplementation"),
+      option("q16_b", "Sometimes, but not consistently.", "teamPrivacyImplementation"),
+      option("q16_c", "No, I do not have that yet.", "teamPrivacyImplementation"),
+    ],
+  },
 ];

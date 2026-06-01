@@ -18,6 +18,7 @@ export default function QuizPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [animDir, setAnimDir] = useState<"forward" | "back">("forward");
@@ -61,7 +62,7 @@ export default function QuizPage() {
   const progress = useMemo(() => (step / nameStepIndex) * 100, [step]);
   const currentAnswer = question ? answers[question.id] : undefined;
   const canContinue = isContactStep
-    ? name.trim().length > 0
+    ? name.trim().length > 0 && email.trim().length > 0
     : Array.isArray(currentAnswer)
       ? currentAnswer.length > 0
       : Boolean(currentAnswer);
@@ -73,7 +74,7 @@ export default function QuizPage() {
 
   const goNext = useCallback(async () => {
     if (!canContinue) {
-      setError(isContactStep ? "Enter your name to see your result." : "Choose an answer before continuing.");
+      setError(isContactStep ? "Enter your name and email to see your result." : "Choose an answer before continuing.");
       return;
     }
 
@@ -86,19 +87,19 @@ export default function QuizPage() {
     setSaving(true);
     setError("");
     try {
-      const result = calculateResult(answers, name.trim());
+      const result = calculateResult(answers, name.trim(), email.trim());
       localStorage.setItem("ai-business-iq-latest-result", JSON.stringify(result));
       await saveQuizResult(result);
       router.push("/results");
     } catch (saveError) {
-      const result = calculateResult(answers, name.trim());
+      const result = calculateResult(answers, name.trim(), email.trim());
       localStorage.setItem("ai-business-iq-latest-result", JSON.stringify(result));
-      setError(saveError instanceof Error ? `Saved locally. Supabase error: ${saveError.message}` : "Saved locally. Supabase could not be reached.");
+      setError(saveError instanceof Error ? `Saved locally. Submission sync error: ${saveError.message}` : "Saved locally. Submission sync could not be reached.");
       router.push("/results");
     } finally {
       setSaving(false);
     }
-  }, [canContinue, step, answers, name, router, isContactStep]);
+  }, [canContinue, step, answers, name, email, router, isContactStep]);
 
   const next = goNext;
 
@@ -130,7 +131,7 @@ export default function QuizPage() {
               <p className="text-sm font-semibold uppercase tracking-wide text-electric">Almost done</p>
               <h1 className="mt-2 text-3xl font-semibold text-navy">Ready for your score?</h1>
               <p className="mt-3 max-w-2xl leading-relaxed text-slate-600">
-                Enter your name and the app will generate your AI Business IQ, course path, and downloadable course PDF.
+                Enter your name and email and the app will generate your AI Business IQ, course path, and downloadable course PDF.
               </p>
               <div className="mt-8 grid gap-4 sm:max-w-md">
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
@@ -141,6 +142,16 @@ export default function QuizPage() {
                     placeholder="Your full name"
                     className="rounded-lg border border-line bg-white px-4 py-3 text-sm outline-none transition focus:border-electric focus:ring-2 focus:ring-electric/10"
                     autoFocus
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-semibold text-slate-700">
+                  Email address
+                  <input
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@example.com"
+                    type="email"
+                    className="rounded-lg border border-line bg-white px-4 py-3 text-sm outline-none transition focus:border-electric focus:ring-2 focus:ring-electric/10"
                   />
                 </label>
               </div>

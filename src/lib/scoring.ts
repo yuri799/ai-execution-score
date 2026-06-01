@@ -326,13 +326,13 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the 15-question scenario assessment. First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question scenario assessment. First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
     .join(", ")}. Bring this roadmap to your AI Execution Accelerator session with Kai.`;
 }
 
-export function calculateResult(answers: Answers, name: string): QuizResult {
+export function calculateResult(answers: Answers, name: string, email: string | null = null): QuizResult {
   const categoryPoints = emptyCategoryTotals();
   let rawScore = 0;
 
@@ -374,7 +374,7 @@ export function calculateResult(answers: Answers, name: string): QuizResult {
 
   const base = {
     name,
-    email: null,
+    email,
     answers,
     categoryScores,
     rawScore: Math.round(rawScore),

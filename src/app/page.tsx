@@ -20,8 +20,8 @@ export default function LandingPage() {
             <span className="grid h-9 w-9 place-items-center rounded-lg border border-white/15 bg-white/10 text-sm font-black text-[#00d4ff]">IQ</span>
             <span className="text-sm font-bold tracking-wide">AI Business IQ</span>
           </div>
-          <Link href="/quiz" className="hidden items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 sm:inline-flex">
-            Start assessment
+          <Link href="/quiz" className="hidden items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-600 sm:inline-flex">
+            Start Assessment
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -30,24 +30,21 @@ export default function LandingPage() {
           <div className="flex flex-col justify-center">
             <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-blue-100">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16.5 12" /></svg>
-              5-minute assessment for business owners
+              7-minute assessment for business owners
             </div>
-            <h1 className="max-w-3xl text-5xl font-bold leading-[1.02] sm:text-6xl">What&apos;s Your AI Business IQ?</h1>
+            <h1 className="max-w-3xl text-5xl font-bold leading-[1.02] sm:text-6xl">Do you feel left behind when it comes to AI?</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              Take the 5-minute assessment. Find out where you really stand. Get a personalized AI course tailored to your score.
+              Find out where you stand and how to improve (in less than seven minutes).
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/quiz" className="inline-flex items-center justify-center gap-2 rounded-lg bg-electric px-6 py-4 text-sm font-black text-white shadow-soft transition hover:bg-blue-600">
-                Find My AI Business IQ
+            <div className="mt-8 max-w-2xl">
+              <Link href="/quiz" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-sm font-black text-white shadow-soft transition hover:bg-emerald-600">
+                Get Your AI Business IQ Score in Under 7 Minutes
                 <ArrowRight size={18} />
               </Link>
-              <a href="#outcomes" className="inline-flex items-center justify-center rounded-lg border border-white/15 px-6 py-4 text-sm font-bold text-blue-100 transition hover:bg-white/10">
-                See what you get
-              </a>
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
               {[
-                ["15", "scenario questions"],
+                ["16", "scenario questions"],
                 ["6", "readiness categories"],
                 ["1", "personalized course PDF"],
               ].map(([value, label]) => (

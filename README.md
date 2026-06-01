@@ -9,9 +9,50 @@ npm install
 npm run dev
 ```
 
-Create `.env.local` from `.env.example` to enable Supabase saving and admin reads.
+Create `.env.local` from `.env.example` to enable Supabase saving, admin reads, and Google Sheets submissions.
 
-The quiz no longer collects email. If your existing `users.email` column is still required, the app writes an automatic `not-collected` placeholder so submissions still save.
+Set `GOOGLE_SHEETS_WEBHOOK_URL` to a deployed Google Apps Script web app URL. The app posts the user's name, email address, score, profile, category scores, recommended project, roadmap text, and every question/answer label to that webhook.
+
+Example Apps Script for the target sheet:
+
+```js
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const sheet = SpreadsheetApp.openById("1AxazrmsI22KouKgpNITJTFcW9GMp8YD2LlT9G7YSz7M").getSheets()[0];
+  const answers = data.answers.reduce((row, item) => {
+    row[item.id] = item.answer;
+    return row;
+  }, {});
+
+  sheet.appendRow([
+    data.submittedAt,
+    data.name,
+    data.email,
+    data.overallScore,
+    data.profile,
+    data.recommendedProject,
+    answers.q1,
+    answers.q2,
+    answers.q3,
+    answers.q4,
+    answers.q5,
+    answers.q6,
+    answers.q7,
+    answers.q8,
+    answers.q9,
+    answers.q10,
+    answers.q11,
+    answers.q12,
+    answers.q13,
+    answers.q14,
+    answers.q15,
+    answers.q16,
+  ]);
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+```
 
 ## Supabase Tables
 

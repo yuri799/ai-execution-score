@@ -19,7 +19,16 @@ export async function saveQuizResult(result: QuizResult) {
   const existing = getLocalResults();
   localStorage.setItem("ai-business-iq-results", JSON.stringify([result, ...existing]));
 
-  if (!supabase) return { savedToSupabase: false };
+  const sheetSave = await fetch("/api/submissions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(result),
+  }).then(async (response) => {
+    if (!response.ok) throw new Error(await response.text());
+    return response.json();
+  });
+
+  if (!supabase) return { savedToSupabase: false, ...sheetSave };
 
   const { data: user, error: userError } = await supabase
     .from("users")
@@ -47,7 +56,7 @@ export async function saveQuizResult(result: QuizResult) {
   });
 
   if (error) throw error;
-  return { savedToSupabase: true };
+  return { savedToSupabase: true, ...sheetSave };
 }
 
 export async function loadAdminResults() {
