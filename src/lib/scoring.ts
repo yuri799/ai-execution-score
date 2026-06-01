@@ -34,7 +34,7 @@ const modules = {
       "Admin, inbox, and operations",
       "Customer service AI",
       "Spotting AI opportunities in your business",
-      "What to bring to your mastermind session with Kai",
+      "How to choose and document your first AI improvement project",
     ],
   },
   module4: {
@@ -326,10 +326,10 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question scenario assessment. First project: ${result.recommendedProject.name}. Start with ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question scenario assessment. First project: ${result.recommendedProject.name}. Focus first on ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
-    .join(", ")}. Bring this roadmap to your AI Execution Accelerator session with Kai.`;
+    .join(", ")} to raise the next version of the score.`;
 }
 
 export function calculateResult(answers: Answers, name: string, email: string | null = null): QuizResult {

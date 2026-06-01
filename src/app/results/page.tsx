@@ -6,7 +6,6 @@ import { ArrowLeft, RotateCcw } from "lucide-react";
 import { ActionPlanChecklist } from "@/components/ActionPlanChecklist";
 import { CategoryScoreBar } from "@/components/CategoryScoreBar";
 import { CoursePathCard } from "@/components/CoursePathCard";
-import { DownloadReportButton } from "@/components/DownloadReportButton";
 import { IqBellCurve } from "@/components/IqBellCurve";
 import { ProfileBadge } from "@/components/ProfileBadge";
 import { ProjectRecommendationCard } from "@/components/ProjectRecommendationCard";
@@ -23,7 +22,7 @@ const labels = {
 };
 
 const sectionIds = ["overview", "categories", "project", "course", "review", "action", "cta"] as const;
-const sectionLabels = ["Overview", "Category Scores", "First Project", "Course Path", "Review & Skip", "Action Plan", "Next Steps"] as const;
+const sectionLabels = ["Overview", "Category Scores", "First Project", "Learning Priorities", "Review Priorities", "Action Plan", "Next Steps"] as const;
 
 export default function ResultsPage() {
   const [result, setResult] = useState<QuizResult | null>(null);
@@ -82,7 +81,6 @@ export default function ResultsPage() {
             <h1 className="mt-1 text-3xl font-semibold text-navy sm:text-4xl">Your AI Business IQ</h1>
           </div>
           <div className="flex flex-wrap gap-3">
-            <DownloadReportButton result={result} />
             <button
               type="button"
               onClick={handleRetake}
@@ -128,7 +126,7 @@ export default function ResultsPage() {
 
             <div className="rounded-xl border border-white/60 glass-card p-6 shadow-sm">
               <p className="leading-7 text-slate-700">
-                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. The detailed breakdown below shows your strengths and your three biggest gaps — and your personalized PDF course is built around closing those gaps.
+                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. The detailed breakdown below shows your strengths, your three biggest gaps, and the roadmap to improve your AI Business IQ.
               </p>
             </div>
 
@@ -172,8 +170,8 @@ export default function ResultsPage() {
 
             <section id="course">
               <div className="mb-5">
-                <p className="text-sm font-bold uppercase tracking-wide text-electric">Custom course path</p>
-                <h2 className="mt-2 text-3xl font-semibold text-navy">What to learn next</h2>
+                <p className="text-sm font-bold uppercase tracking-wide text-electric">Improvement roadmap</p>
+                <h2 className="mt-2 text-3xl font-semibold text-navy">What to improve next</h2>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {result.recommendedModules.map((mod) => (
@@ -184,15 +182,15 @@ export default function ResultsPage() {
 
             <section id="review" className="grid gap-5 lg:grid-cols-2">
               <div className="rounded-xl border border-white/60 glass-card p-6 shadow-sm">
-                <h2 className="text-2xl font-semibold text-navy">What you can skip</h2>
+                <h2 className="text-2xl font-semibold text-navy">Lower-priority areas</h2>
                 <ul className="mt-4 space-y-2 text-sm leading-6 text-slate-700">
                   {result.skippedModules.length
                     ? result.skippedModules.map((item) => <li key={item.module} className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />{item.module}</li>)
-                    : <li>No full modules are skipped yet. Move quickly through summaries where noted.</li>}
+                    : <li>No areas are low-priority yet. Move quickly through summaries where noted.</li>}
                 </ul>
               </div>
               <div className="rounded-xl border border-white/60 glass-card p-6 shadow-sm">
-                <h2 className="text-2xl font-semibold text-navy">Optional review lessons</h2>
+                <h2 className="text-2xl font-semibold text-navy">Optional review topics</h2>
                 <ul className="mt-4 space-y-2 text-sm leading-6 text-slate-700">
                   {result.optionalReviewLessons.map((item) => (
                     <li key={item} className="flex gap-2">
@@ -209,11 +207,8 @@ export default function ResultsPage() {
             </section>
 
             <section id="cta" className="rounded-xl bg-gradient-to-br from-navy to-ink p-8 text-white shadow-soft">
-              <p className="text-2xl font-semibold">Bring this roadmap to your AI Execution Accelerator session with Kai.</p>
-              <p className="mt-3 max-w-3xl text-slate-200">Use your score, recommended first project, and skipped lessons to make the session more specific and implementation-focused.</p>
-              <div className="mt-6">
-                <DownloadReportButton result={result} />
-              </div>
+              <p className="text-2xl font-semibold">Your roadmap is to raise the next version of your AI Business IQ.</p>
+              <p className="mt-3 max-w-3xl text-slate-200">Start with the recommended project, work through the lowest category scores first, and use the 7-day action plan to turn the roadmap into visible business progress.</p>
             </section>
           </div>
         </div>

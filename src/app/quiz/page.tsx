@@ -131,7 +131,7 @@ export default function QuizPage() {
               <p className="text-sm font-semibold uppercase tracking-wide text-electric">Almost done</p>
               <h1 className="mt-2 text-3xl font-semibold text-navy">Ready for your score?</h1>
               <p className="mt-3 max-w-2xl leading-relaxed text-slate-600">
-                Enter your name and email and the app will generate your AI Business IQ, course path, and downloadable course PDF.
+                Enter your name and email and the app will generate your AI Business IQ, improvement roadmap, and next action steps.
               </p>
               <div className="mt-8 grid gap-4 sm:max-w-md">
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">

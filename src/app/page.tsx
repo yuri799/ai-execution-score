@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, ChartColumn, CircleCheck, BadgeCheck, ClipboardList, Route } from "lucide-react";
+import { ArrowRight, ChartColumn, CircleCheck, BadgeCheck, ClipboardList, Route } from "lucide-react";
 import { PreviewCard } from "@/components/PreviewCard";
 
 const outcomes = [
   { icon: ChartColumn, label: "Your AI Business IQ", desc: "A clear score that shows where you stand." },
   { icon: BadgeCheck, label: "Your AI profile", desc: "A practical tier, not a vague personality label." },
-  { icon: Route, label: "Your custom course path", desc: "The lessons your business needs next." },
-  { icon: CircleCheck, label: "A course tailored to your gaps", desc: "No padding, no generic sequence." },
+  { icon: Route, label: "Your improvement roadmap", desc: "The next priorities for raising your AI Business IQ." },
+  { icon: CircleCheck, label: "A gap-by-gap breakdown", desc: "A clear view of what to improve first." },
   { icon: ClipboardList, label: "Your first recommended AI project", desc: "The best place to create leverage first." },
-  { icon: BookOpen, label: "A 7-day action plan", desc: "A concrete next week of implementation." },
+  { icon: CircleCheck, label: "A 7-day action plan", desc: "A concrete next week of implementation." },
 ];
 
 export default function LandingPage() {
@@ -46,7 +46,7 @@ export default function LandingPage() {
               {[
                 ["16", "scenario questions"],
                 ["6", "readiness categories"],
-                ["1", "personalized course PDF"],
+                ["1", "improvement roadmap"],
               ].map(([value, label]) => (
                 <div key={label} className="border-l border-white/15 pl-4">
                   <p className="text-2xl font-black text-white">{value}</p>
@@ -68,7 +68,7 @@ export default function LandingPage() {
             <p className="text-sm font-black uppercase tracking-wide text-electric">What You&apos;ll Get</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy">A practical roadmap, not a generic score.</h2>
           </div>
-          <p className="text-base leading-7 text-slate-600">The assessment turns your answers into a course path, project recommendation, and action plan that fits how your business actually uses AI today.</p>
+          <p className="text-base leading-7 text-slate-600">The assessment turns your answers into an improvement roadmap, project recommendation, and action plan that fits how your business actually uses AI today.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {outcomes.map(({ icon: Icon, label, desc }) => (
