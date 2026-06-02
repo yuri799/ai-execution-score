@@ -31,7 +31,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
               {[
-                ["16", "scenario questions"],
+                ["17", "assessment questions"],
                 ["6", "readiness categories"],
                 ["1", "improvement roadmap"],
               ].map(([value, label]) => (

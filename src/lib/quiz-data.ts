@@ -4,195 +4,184 @@ function option(id: string, label: string, category: CategoryKey, earnsPoints = 
   return { id, label, points: earnsPoints ? 10 : 0, category };
 }
 
-function single(id: string, title: string, category: CategoryKey, labels: string[], scoringIndex: number): Question {
+function scoredOption(id: string, label: string, category: CategoryKey, points: number): QuestionOption {
+  return { id, label, points, category };
+}
+
+function weightedSingle(id: string, title: string, category: CategoryKey, labels: Array<[string, number]>): Question {
   return {
     id,
     title,
     type: "single",
-    options: labels.map((label, index) => option(`${id}_${String.fromCharCode(97 + index)}`, label, category, index === scoringIndex)),
+    options: labels.map(([label, points], index) => scoredOption(`${id}_${String.fromCharCode(97 + index)}`, label, category, points)),
   };
 }
 
 export const quizQuestions: Question[] = [
-  single(
+  weightedSingle(
     "q1",
-    'You receive a customer message: "I was charged twice for order #4471 and nobody answered my two emails." Which AI-drafted reply is best?',
+    'A customer writes: "I was charged twice for order #4471 and nobody answered my two emails." Which AI reply shows the best judgment before it is sent?',
     "prompting",
     [
-      '"Thank you for your feedback! We value your business and will look into it. Have a great day!"',
-      '"Dear valued customer, we apologize for any inconvenience. Your satisfaction is our top priority."',
-      "\"I'm sorry about the double charge on #4471 and that your earlier emails went unanswered. I've flagged the duplicate for refund and will confirm by email within 24 hours.\"",
-      "\"We've received your message about #4471. Please allow 5-7 business days for a response.\"",
+      ["A warm apology that says the company values the customer, but avoids mentioning the double charge until support verifies it.", 3],
+      ["Acknowledge the double charge and the missed emails, say the duplicate charge is being checked, give a specific update window, and avoid promising a refund until verified.", 10],
+      ["Immediately promise a refund and a discount because financial complaints should be handled aggressively.", 5],
+      ["Keep it short: say the team received the message and will respond as soon as possible.", 2],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q2",
-    'AI tells you: "Ad spend rose 20% and sales rose 20% the same month, so the ads work - every dollar of spend returns a dollar of sales." What\'s the main problem?',
+    'AI says: "Ad spend rose 20% and sales rose 20%, so the ads created a dollar-for-dollar return." Which missing fact most weakens that conclusion?',
     "verification",
     [
-      "Percentages should be shown as decimals.",
-      "A matching percentage rise doesn't prove the ads caused the sales, and equal percentages don't mean a dollar-for-dollar return.",
-      "20% is too small to matter.",
-      "It should have compared to last year.",
+      ["The AI did not say which ad platform was used.", 2],
+      ["The same percentage increase does not prove causation or dollar return; you need actual dollars, margins, and a baseline or control period.", 10],
+      ["The AI should have rounded the percentages before comparing them.", 0],
+      ["A 20% increase is too small to analyze.", 1],
     ],
-    1,
   ),
-  single(
+  weightedSingle(
     "q3",
-    'A customer review reads: "Fast shipping and the product is solid, though the box was a bit dented." Which AI summary is accurate?',
+    'A review says: "Fast shipping and the product is solid, though the box was a bit dented." Which summary is safest for a business dashboard?',
     "verification",
     [
-      '"Customer is happy with shipping and quality; minor complaint about packaging."',
-      '"Customer is satisfied overall and would recommend to others."',
-      '"Customer had shipping delays but liked the product."',
-      '"Customer was unhappy with the product quality."',
+      ["Positive shipping and product feedback, with a minor packaging issue. No evidence of product damage or recommendation intent.", 10],
+      ["The customer is satisfied overall and would recommend the product.", 5],
+      ["The customer liked the product but had shipping delays.", 1],
+      ["The customer is unhappy because the packaging was damaged.", 2],
     ],
-    0,
   ),
-  single(
+  weightedSingle(
     "q4",
-    'Someone prompts "Give me advice on growing my business" and gets a vague, useless answer. Which single change improves the result most?',
+    'You prompt AI with "Give me advice on growing my business" and get generic advice. Which revision most turns the prompt into a decision tool?',
     "prompting",
     [
-      'Add "please" and "thank you."',
-      'Tell it to "be more specific and detailed."',
-      "Add what the business is, its size, the specific bottleneck, and what decision a good answer would let them make.",
-      "Ask for the answer in bullet points.",
+      ['"Give me 10 specific ideas in bullet points and make them practical."', 4],
+      ['"Act as a world-class growth strategist and think step by step."', 3],
+      ['"We are a 6-person local service business with 300 leads/month, weak follow-up, and a $2k/month budget. Rank 3 growth moves by expected ROI, effort, and risk so I can choose one this week."', 10],
+      ['"Make the answer shorter, clearer, and more actionable."', 2],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q5",
-    "You want AI's help writing a hiring plan. Which prompt produces the best result?",
+    "AI drafts a hiring plan that says you can hire two senior designers in three weeks on a $90k total budget. What follow-up best tests whether the plan is realistic?",
     "prompting",
     [
-      '"Act as a world-class HR expert and write me a hiring plan."',
-      '"Write a hiring plan."',
-      "\"We're a 6-person agency adding 2 designers in 3 months on a $90k budget. Draft a hiring plan and tell me the biggest risk in my timeline.\"",
-      '"Act as the best recruiter in the world and think step by step."',
+      ['Ask it to "make the plan more detailed."', 2],
+      ["Ask it to list the salary, recruiting, onboarding, timing, and quality assumptions, then identify which assumption is most likely to break.", 10],
+      ["Ask it to rewrite the plan in a more confident executive tone.", 0],
+      ["Ask it to find cheaper candidates so the budget works.", 4],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q6",
-    "For which task is it most acceptable to use AI output with little or no checking?",
+    "Which AI output can safely receive the lightest human review?",
     "verification",
     [
-      "Brainstorming internal ideas you'll evaluate yourself anyway.",
-      "The final figures on a client invoice.",
-      "A public statement issued under your company's name.",
-      "Summarizing a contract you're about to sign.",
+      ["A brainstormed list of internal campaign ideas that you will filter before using.", 10],
+      ["Final invoice numbers for a client.", 0],
+      ["A public statement about a sensitive customer issue.", 1],
+      ["A summary of a contract you are about to sign.", 2],
     ],
-    0,
   ),
-  single(
+  weightedSingle(
     "q7",
-    "You need 50 personalized outreach messages. Which approach gets all 50 done well with the least of your time?",
+    "You need 50 personalized outreach messages. You have contact data, a strong example message, and limited time. Which workflow best balances speed, quality, and risk?",
     "automationTools",
     [
-      "Write all 50 yourself.",
-      "Write one strong message and manually rewrite it 50 times.",
-      "Write one template with instructions, give AI the 50 contacts' details, generate all at once, then spot-check a sample.",
-      "Have AI write one message and send it identically to all 50.",
+      ["Generate all 50 from the contact data and send them automatically because personalization is the main goal.", 3],
+      ["Write one template, define the personalization fields, generate all 50, then spot-check a sample and manually review any high-value prospects.", 10],
+      ["Write all 50 yourself because AI personalization is too risky.", 2],
+      ["Ask AI for one great message and send it to all 50 contacts.", 0],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q8",
-    "You want AI to screen inbound job applicants, but you've never defined what a strong applicant looks like. Strongest first move:",
+    "You want AI to screen inbound job applicants, but nobody has defined what a strong applicant looks like. What is the real bottleneck?",
     "teamPrivacyImplementation",
     [
-      'Tell AI "build me an applicant screening system."',
-      "Upgrade to the most advanced model.",
-      "Write out, in your own words, the signals separating a strong applicant from a weak one - then build the screen around those.",
-      "Have AI invent the criteria and use them as-is.",
+      ["The model is not advanced enough yet.", 1],
+      ["The team has not made the judgment criteria explicit, so AI has no reliable target to screen against.", 10],
+      ["The applicant data needs to be pasted into more AI tools to compare outputs.", 0],
+      ["The workflow should be automated first; criteria can be adjusted after the AI starts screening.", 3],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q9",
-    "You're deciding where to spend effort. Which task is a waste to put AI on, because the rule never changes?",
+    "Which task should be handled by deterministic automation before involving AI?",
     "automationTools",
     [
-      "Drafting replies to varied customer questions.",
-      "Copying a customer's address from a form into your CRM every time one is submitted.",
-      "Summarizing messy meeting notes.",
-      "Deciding which leads look most promising.",
+      ["Drafting replies to varied customer questions.", 2],
+      ["Copying a customer's address from a form into the same CRM fields every time.", 10],
+      ["Summarizing messy meeting notes.", 3],
+      ["Deciding which leads look most promising from messy notes and call history.", 2],
     ],
-    1,
   ),
-  single(
+  weightedSingle(
     "q10",
-    "You want a system that, with no human touching it, researches a new lead, writes a tailored email, sends it, and books a call if they reply. What does this require, and what's the main risk?",
+    "You want an agent that researches a new lead, drafts a tailored email, sends it, and books a call if they reply. What design is safest?",
     "automationTools",
     [
-      "One well-crafted prompt; risk is it runs too long.",
-      "A bigger context window; risk is it forgets.",
-      "An agent that can act across tools with defined permissions; risk is it taking wrong actions with no human review step.",
-      "A faster model; risk is cost.",
+      ["Let the agent do everything once the prompt is detailed enough.", 1],
+      ["Give the agent clear tool permissions, let it research and draft, and require human approval before external sends or calendar changes until it has proven reliable.", 10],
+      ["Use a larger context window so the agent remembers the instructions.", 3],
+      ["Use the fastest model so mistakes are easier to correct quickly.", 0],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q11",
-    'You ask AI to "summarize this report in 3 bullets and flag any financial risks." It returns a clean, accurate 3-bullet summary. Most important thing to notice?',
+    'You ask AI to "summarize this report in 3 bullets and flag any financial risks." It returns three clean bullets but no risk flag. What should you notice?',
     "verification",
     [
-      "Whether the bullets are grammatically parallel.",
-      "It never flagged the financial risks - AI often silently drops a second instruction.",
-      "Whether 3 bullets is enough.",
-      "Whether the tone is formal enough.",
+      ["The summary may still be useful, but the model silently dropped a second instruction; check each requested output separately.", 10],
+      ["The report probably has no financial risks because the AI did not mention any.", 1],
+      ["Three bullets is too short for financial analysis.", 3],
+      ["The main issue is whether the bullets are written in the same grammatical style.", 0],
     ],
-    1,
   ),
-  single(
+  weightedSingle(
     "q12",
-    "AI's draft is 90% right but contains one clearly false claim about your industry. Best next move:",
+    "AI's draft is mostly useful but includes one false industry claim that affects a recommendation. What is the best next move?",
     "prompting",
     [
-      "Accept it and fix the claim yourself later.",
-      "Throw it out and start with a brand-new prompt.",
-      "Point to the specific false claim, explain why it's wrong, and have it revise the rest intact.",
-      'Ask it to "double-check everything."',
+      ["Reject the whole draft and start over with a more powerful prompt.", 2],
+      ["Point to the false claim, explain what is wrong, ask it to revise the affected reasoning, and preserve the parts that still hold.", 10],
+      ['Ask it to "double-check everything" without naming the error.', 3],
+      ["Fix the false sentence yourself and leave the rest unchanged.", 5],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q13",
-    "Tool A costs $30/month and saves 1 hour a week of admin. Tool B costs $120/month and saves 8 hours a week on your highest-value work. How should you choose?",
+    "Tool A costs $30/month and saves 4 hours/month of low-value admin work. Tool B costs $120/month and saves 32 hours/month of high-value sales work. How should you reason about the choice?",
     "businessStrategy",
     [
-      "Pick A - it's cheaper.",
-      "Weigh each tool's cost against the value of the time it frees, not its sticker price.",
-      "Pick neither until both are free.",
-      "Pick A because $120 is too much for software.",
+      ["Pick Tool A because it is cheaper and easier to justify.", 1],
+      ["Pick Tool B if the value of the sales time it frees exceeds its higher price; compare net value, not sticker price.", 10],
+      ["Pick both only if each tool has a free trial.", 3],
+      ["Pick Tool A because smaller tools are safer for a first AI project.", 4],
     ],
-    1,
   ),
-  single(
+  weightedSingle(
     "q14",
-    "If you could point AI at only one thing in your business for the biggest return, the best target is:",
+    "You can only improve one workflow with AI this month. Which candidate is strongest?",
     "businessStrategy",
     [
-      "Whatever annoys you most.",
-      "Whatever a competitor is doing.",
-      "A task that's repetitive, high-volume, and follows a learnable pattern.",
-      "The most complex, judgment-heavy decision you make.",
+      ["A rare strategic decision that only the owner understands.", 1],
+      ["A recurring workflow with high volume, clear examples, measurable outcomes, and a human review point before anything risky happens.", 10],
+      ["Whatever task is most annoying this week.", 3],
+      ["The workflow a competitor seems to be automating, even if your team has no examples yet.", 2],
     ],
-    2,
   ),
-  single(
+  weightedSingle(
     "q15",
-    'You give AI a 20-page report and ask for "the three biggest risks." It returns three - all drawn from the first two pages. Most likely explanation and fix?',
+    'You give AI a 20-page report and ask for "the three biggest risks." It returns three risks, all from the first two pages. What is the best explanation and fix?',
     "aiBasics",
     [
-      "The report only has risks on the first two pages.",
-      "The AI is lazy; just ask again.",
-      "It may be over-weighting the start of a long input; have it work through the report section by section and list risks per section.",
-      "You need a newer model.",
+      ["The report probably only contains risks near the beginning.", 1],
+      ["The AI may be over-weighting the start of a long input; have it analyze the report section by section, list risks per section, then rank them across the whole report.", 10],
+      ["The AI is being lazy; ask the same question again with stronger wording.", 2],
+      ["You need a newer model, because newer models do not have this problem.", 3],
     ],
-    2,
   ),
   {
     id: "q16",
@@ -204,4 +193,15 @@ export const quizQuestions: Question[] = [
       option("q16_c", "No, I do not have that yet.", "teamPrivacyImplementation"),
     ],
   },
+  weightedSingle(
+    "q17",
+    "Have you built or are you actively using agentic AI tools or workflows, such as OpenClaw, Hermes, custom agents, or tool-using assistants?",
+    "automationTools",
+    [
+      ["Yes - I use one in a real workflow with clear permissions, logs, and human review for risky actions.", 10],
+      ["I have built or tested prototypes, but they are not yet reliable enough for production work.", 6],
+      ["I use chatbots or simple automations, but not agents that can act across tools.", 3],
+      ["No, or I am not sure what agentic AI means yet.", 0],
+    ],
+  ),
 ];
