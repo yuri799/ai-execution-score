@@ -57,8 +57,8 @@ export default function LandingPage() {
           </div>
           <p className="text-base leading-7 text-slate-600">The assessment turns your answers into an improvement roadmap, project recommendation, and action plan that fits how your business actually uses AI today.</p>
         </div>
-        <div className="grid items-stretch gap-6 lg:grid-cols-2">
-          <div className="aspect-[3/2] overflow-hidden rounded-lg border border-line bg-white shadow-sm">
+        <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-10">
+          <div className="min-w-0 aspect-[3/2] overflow-hidden rounded-lg border border-line bg-white shadow-sm">
             <Image
               src="/ai-iq-score.png"
               alt="Business owner reviewing an AI Business IQ score dashboard"
@@ -67,13 +67,13 @@ export default function LandingPage() {
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:aspect-[3/2]">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:aspect-[3/2]">
             {outcomes.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="rounded-lg border border-line bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-soft">
-                <div className="grid h-10 w-10 place-items-center rounded-lg bg-blue-50 text-electric">
-                  <Icon size={22} />
+              <div key={label} className="rounded-lg border border-line bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-soft">
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-blue-50 text-electric">
+                  <Icon size={20} />
                 </div>
-                <p className="mt-4 font-bold text-navy">{label}</p>
+                <p className="mt-3 font-bold leading-snug text-navy">{label}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
               </div>
             ))}
