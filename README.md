@@ -48,6 +48,9 @@ function doPost(e) {
     answers.q15,
     answers.q16,
     answers.q17,
+    answers.q18,
+    answers.q19,
+    answers.q20,
   ]);
 
   return ContentService.createTextOutput(JSON.stringify({ ok: true }))

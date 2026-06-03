@@ -10,7 +10,7 @@ type ScoreCardProps = {
   tierLabel?: string;
 };
 
-export function ScoreCard({ score, label = "AI Business IQ", suffix = "IQ", maxScore = 225, tierLabel }: ScoreCardProps) {
+export function ScoreCard({ score, label = "AI Business IQ", suffix = "IQ", maxScore = 200, tierLabel }: ScoreCardProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [barWidth, setBarWidth] = useState(0);
 
@@ -29,9 +29,9 @@ export function ScoreCard({ score, label = "AI Business IQ", suffix = "IQ", maxS
   }, [score, maxScore]);
 
   const barGradient =
-    score >= 160 ? "linear-gradient(90deg, #fbbf24, #fde047)" :
-    score >= 115 ? "linear-gradient(90deg, #34d399, #86efac)" :
-    score >= 85  ? "linear-gradient(90deg, #1f7bff, #4f46e5)" :
+    score >= 161 ? "linear-gradient(90deg, #fbbf24, #fde047)" :
+    score >= 121 ? "linear-gradient(90deg, #34d399, #86efac)" :
+    score >= 61  ? "linear-gradient(90deg, #1f7bff, #4f46e5)" :
     "linear-gradient(90deg, #94a3b8, #cbd5e1)";
 
   return (

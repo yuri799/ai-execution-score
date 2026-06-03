@@ -6,9 +6,9 @@ export type CategoryKey =
   | "automationTools"
   | "teamPrivacyImplementation";
 
-export type QuestionType = "single" | "multi";
+export type QuestionType = "single" | "multi" | "likert";
 
-export type AnswerValue = string | string[];
+export type AnswerValue = string | string[] | number;
 
 export type Answers = Record<string, AnswerValue>;
 
@@ -25,6 +25,7 @@ export type Question = {
   type: QuestionType;
   options: QuestionOption[];
   maxPoints?: number;
+  reverseScored?: boolean;
 };
 
 export type CategoryScores = Record<CategoryKey, number>;
@@ -50,6 +51,8 @@ export type QuizResult = {
   overallScore: number;
   percentile: number;
   profile: string;
+  level: string;
+  pdfBand: "beginner" | "intermediate" | "advanced";
   profileDescription: string;
   strengths: string[];
   gaps: string[];

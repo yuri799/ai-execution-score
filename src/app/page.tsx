@@ -22,7 +22,7 @@ export default function LandingPage() {
             </div>
             <h1 className="max-w-3xl text-5xl font-bold leading-[1.02] sm:text-6xl">Are you ahead or behind on AI?</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              Find out how well you understand AI for business, where your biggest gaps are, and the next move that will raise your score.
+              Find out how well you understand AI for business, where your biggest gaps are, and the next move that will raise your AI Business IQ.
             </p>
             <div className="mt-8 max-w-2xl">
               <Link href="/quiz" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-sm font-black text-white shadow-soft transition hover:bg-emerald-600">
@@ -31,7 +31,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
               {[
-                ["17", "reasoning-based questions"],
+                ["20", "assessment questions"],
                 ["6", "business AI categories"],
                 ["1", "personalized improvement roadmap"],
               ].map(([value, label]) => (

@@ -68,6 +68,8 @@ export default function ResultsPage() {
     );
   }
 
+  const tierDisplay = result.level ? `${result.profile} - Level ${result.level}` : result.profile;
+
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
@@ -116,8 +118,8 @@ export default function ResultsPage() {
 
           <div className="space-y-8">
             <section id="overview" className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-              <ScoreCard score={result.overallScore} tierLabel={result.profile} />
-              <ProfileBadge profile={result.profile} description={result.profileDescription} />
+              <ScoreCard score={result.overallScore} tierLabel={tierDisplay} />
+              <ProfileBadge profile={tierDisplay} description={result.profileDescription} />
             </section>
 
             <section id="overview-continued">
@@ -126,7 +128,7 @@ export default function ResultsPage() {
 
             <div className="rounded-xl border border-white/60 glass-card p-6 shadow-sm">
               <p className="leading-7 text-slate-700">
-                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. The detailed breakdown below shows your strengths, your three biggest gaps, and the roadmap to improve your AI Business IQ.
+                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. Most business owners land around 60 &mdash; Level 3, where AI is a useful tool but not yet a force multiplier. The breakdown below shows your strengths and your three biggest gaps.
               </p>
             </div>
 

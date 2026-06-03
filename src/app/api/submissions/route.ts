@@ -4,11 +4,16 @@ import type { AnswerValue, QuizResult } from "@/lib/types";
 
 function selectedIds(answer: AnswerValue | undefined) {
   if (Array.isArray(answer)) return answer;
-  return answer ? [answer] : [];
+  if (typeof answer === "string" && answer.length > 0) return [answer];
+  return [];
 }
 
 function answerLabels(questionId: string, answer: AnswerValue | undefined) {
   const question = quizQuestions.find((item) => item.id === questionId);
+  if (question && typeof answer === "number") {
+    const option = question.options.find((item) => item.points === answer);
+    return option ? [option.label] : [String(answer)];
+  }
   if (!question) return selectedIds(answer);
   return selectedIds(answer).map((id) => question.options.find((option) => option.id === id)?.label ?? id);
 }
@@ -28,6 +33,8 @@ function sheetPayload(result: QuizResult) {
     rawScore: result.rawScore,
     percentile: result.percentile,
     profile: result.profile,
+    level: result.level,
+    pdfBand: result.pdfBand,
     categoryScores: result.categoryScores,
     recommendedProject: result.recommendedProject.name,
     generatedRoadmap: result.generatedRoadmap,

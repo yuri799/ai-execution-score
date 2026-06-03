@@ -19,9 +19,9 @@ function csvEscape(value: string | number) {
 }
 
 function scoreColor(score: number) {
-  if (score >= 160) return "text-amber-500";
-  if (score >= 115) return "text-emerald-500";
-  if (score >= 85) return "text-electric";
+  if (score >= 161) return "text-amber-500";
+  if (score >= 121) return "text-emerald-500";
+  if (score >= 61) return "text-electric";
   return "text-slate-500";
 }
 

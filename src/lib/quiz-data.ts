@@ -1,207 +1,144 @@
 import type { CategoryKey, Question, QuestionOption } from "@/lib/types";
 
-function option(id: string, label: string, category: CategoryKey, earnsPoints = false): QuestionOption {
-  return { id, label, points: earnsPoints ? 10 : 0, category };
-}
+const likertLabels = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"] as const;
 
-function scoredOption(id: string, label: string, category: CategoryKey, points: number): QuestionOption {
+function option(id: string, label: string, category: CategoryKey, points: number): QuestionOption {
   return { id, label, points, category };
 }
 
-function weightedSingle(id: string, title: string, category: CategoryKey, labels: Array<[string, number]>): Question {
+function likert(id: string, title: string, category: CategoryKey, reverseScored = false): Question {
+  return {
+    id,
+    title,
+    type: "likert",
+    reverseScored,
+    options: likertLabels.map((label, index) => option(`${id}_${index + 1}`, label, category, reverseScored ? 4 - index : index)),
+  };
+}
+
+function single(id: string, title: string, category: CategoryKey, labels: Array<[string, number]>): Question {
   return {
     id,
     title,
     type: "single",
-    options: labels.map(([label, points], index) => scoredOption(`${id}_${String.fromCharCode(97 + index)}`, label, category, points)),
+    options: labels.map(([label, points], index) => option(`${id}_${String.fromCharCode(97 + index)}`, label, category, points)),
+  };
+}
+
+function multi(id: string, title: string, category: CategoryKey, labels: Array<[string, number]>, maxPoints: number): Question {
+  return {
+    id,
+    title,
+    type: "multi",
+    maxPoints,
+    options: labels.map(([label, points], index) => option(`${id}_${String.fromCharCode(97 + index)}`, label, category, points)),
   };
 }
 
 export const quizQuestions: Question[] = [
-  weightedSingle(
-    "q1",
-    "You ask AI to draft a supplier negotiation email. It threatens to cancel the contract unless prices drop 15%, but you never said you had another supplier. What is the main flaw?",
-    "prompting",
-    [
-      ["The email is too aggressive; supplier emails should always be friendly.", 3],
-      ["The AI invented leverage and chose a risky tactic without knowing your real position.", 10],
-      ["The prompt should have asked for a shorter email.", 1],
-      ["The AI should have included more industry jargon to sound credible.", 0],
-    ],
-  ),
-  weightedSingle(
-    "q2",
-    "AI says your lead funnel improved because conversion rate rose from 10% to 15%. Last month you had 1,000 leads; this month you had 500. What should you check before celebrating?",
-    "verification",
-    [
-      ["Whether the conversion rate was formatted as a percentage or decimal.", 0],
-      ["Whether total converted customers, revenue, and lead quality actually improved despite lower volume.", 10],
-      ["Whether the AI used the newest model to analyze the funnel.", 1],
-      ["Whether the increase from 10% to 15% is large enough to mention.", 3],
-    ],
-  ),
-  weightedSingle(
-    "q3",
-    'AI recommends a software tool and says it "launched a new enterprise plan last week," but provides no source. What is the correct mental model?',
-    "aiBasics",
-    [
-      ["Treat the claim as plausible text until verified against a current source.", 10],
-      ["Trust it if the rest of the recommendation sounds detailed.", 2],
-      ["Ask the same model again; if it repeats the claim, it is probably true.", 3],
-      ["Ignore the date because tool details do not affect business decisions.", 0],
-    ],
-  ),
-  weightedSingle(
-    "q4",
-    "You need AI to classify customer messages as Refund, Tech Issue, Angry, or Sales Lead. Which prompt design is most likely to produce consistent results?",
-    "prompting",
-    [
-      ['"Read each message carefully and choose the best label."', 3],
-      ["Define each label, give edge-case examples, require one label plus confidence, and specify what to do when two labels fit.", 10],
-      ['"Act as a senior customer support expert and think step by step."', 4],
-      ["Ask for labels, sentiment, summary, and reply draft in one output so the model has more context.", 2],
-    ],
-  ),
-  weightedSingle(
-    "q5",
-    "You can run one AI project this month. Which one is the strongest first bet?",
-    "businessStrategy",
-    [
-      ["A rare pricing strategy decision with high upside but little repeatable data.", 2],
-      ["A daily customer-message triage workflow with examples, volume, measurable accuracy, and a human review step.", 10],
-      ["A payroll compliance assistant that files forms automatically.", 1],
-      ["A brand-new product idea generator because innovation has the biggest upside.", 3],
-    ],
-  ),
-  weightedSingle(
-    "q6",
-    'AI summarizes a meeting as: "Send the revised contract Friday." The transcript says: "Do not send the revised contract until legal reviews it." What should you conclude?',
-    "verification",
-    [
-      ["The summary converted a blocker into an action item, so it needs correction before anyone acts.", 10],
-      ["The summary is close enough because Friday was mentioned in the meeting.", 2],
-      ["The issue is only that the summary should include more context.", 4],
-      ["Legal review is probably implied, so the action item is safe.", 1],
-    ],
-  ),
-  weightedSingle(
-    "q7",
-    "Support tickets arrive as messy text. You want urgent billing issues routed to a manager and basic how-to questions routed to a help article. What is the best system shape?",
-    "automationTools",
-    [
-      ["Use AI to classify the messy text, then use deterministic rules to route each class.", 10],
-      ["Ask AI to read each ticket and decide everything, including who should handle it.", 5],
-      ["Use fixed keyword rules only; AI is unnecessary for messy language.", 3],
-      ["Send every ticket to a manager until AI becomes fully reliable.", 1],
-    ],
-  ),
-  weightedSingle(
-    "q8",
-    "Your team is pasting customer emails, names, and order details into personal AI accounts to save time. What is the first governance move?",
-    "teamPrivacyImplementation",
-    [
-      ["Ban all AI until a full legal policy is written.", 3],
-      ["Define what data may be used, which tools are approved, who owns review, and what must never be pasted.", 10],
-      ["Tell everyone to remove names manually and keep using any tool they prefer.", 5],
-      ["Upgrade the team to paid AI accounts and assume privacy is solved.", 2],
-    ],
-  ),
-  weightedSingle(
-    "q9",
-    "Which workflow should be automated without AI first?",
-    "automationTools",
-    [
-      ["If a web form is submitted, create a CRM contact and send the same welcome email.", 10],
-      ["Read a complaint and decide whether it is angry, urgent, or routine.", 2],
-      ["Summarize a discovery call into next steps.", 2],
-      ["Turn rough notes into a client-ready follow-up.", 1],
-    ],
-  ),
-  weightedSingle(
+  likert("q1", "AI is going to be a net positive force for my business.", "aiBasics"),
+  likert("q2", "I am excited about using AI more in my work, not anxious about it.", "aiBasics"),
+  likert("q3", "AI replacing human judgment in business is something I worry a lot about.", "verification", true),
+  likert("q4", "Businesses that ignore AI for the next two years will fall behind.", "businessStrategy"),
+  likert("q5", "I use AI tools at least once every working day.", "businessStrategy"),
+  likert("q6", "I have written a prompt longer than three sentences this week.", "prompting"),
+  likert("q7", "I have built or customized at least one AI workflow that runs without me babysitting it.", "automationTools"),
+  likert("q8", "I have taught at least one person on my team how to use AI for their work.", "teamPrivacyImplementation"),
+  likert("q9", "I regularly compare outputs from different AI models for the same task.", "businessStrategy"),
+  likert(
     "q10",
-    "An AI agent can access your CRM, email, calendar, and payment system. Which permission design is most intelligent for launch?",
-    "automationTools",
-    [
-      ["Give full access so the agent can prove whether it saves time.", 0],
-      ["Let it read broadly, draft actions, and require approval for sends, calendar changes, discounts, refunds, or payments.", 10],
-      ["Let it act freely only during business hours so mistakes can be caught quickly.", 3],
-      ["Give access only to email because calendar and payments are more sensitive.", 5],
-    ],
+    'I understand the difference between "push" prompts (giving the AI instructions) and "pull" prompts (asking the AI to extract information out of me through questions).',
+    "prompting",
   ),
-  weightedSingle(
+  single(
     "q11",
-    "AI gives you a confident market-size claim and includes a link. The linked page exists, but it does not support the number. What failed?",
-    "verification",
-    [
-      ["The answer used a real-looking citation without source-to-claim support.", 10],
-      ["The source is probably correct because the URL exists.", 1],
-      ["The issue is that market-size numbers change too often to use.", 3],
-      ["The claim should be trusted if another AI gives the same number.", 2],
-    ],
-  ),
-  weightedSingle(
-    "q12",
-    "AI gives three marketing ideas. They are creative, but none fit your budget, team, or sales cycle. What follow-up best turns creativity into usable judgment?",
+    "Which best describes your prompting style?",
     "prompting",
     [
-      ["Ask for ten more creative ideas so there are more options.", 2],
-      ["Give budget, team capacity, sales cycle, and success metric, then ask it to rank ideas by expected payoff and execution risk.", 10],
-      ["Ask it to make the ideas sound more practical.", 3],
-      ["Pick the most exciting idea and ask AI to write a launch plan.", 5],
+      ["I just ask questions in one line, like a Google search.", 0],
+      ["I write a paragraph with context, but I don't structure it.", 1],
+      ["I structure my prompts with role, examples, and constraints.", 2],
+      ["I use both push prompts (commands) and pull prompts (AI interviews me) depending on the task.", 3],
+      ["I maintain a library of reusable prompts and version them as I learn what works.", 4],
     ],
   ),
-  weightedSingle(
-    "q13",
-    "Two AI tools save time. Tool A saves 6 admin hours/month. Tool B saves 20 sales hours/month but requires two weeks of setup. What matters most?",
-    "businessStrategy",
-    [
-      ["The monthly subscription price alone.", 1],
-      ["Net business value after setup cost, adoption effort, risk, and value of the hours saved.", 10],
-      ["Which tool has more features and integrations.", 3],
-      ["Which tool is easiest to start using today.", 5],
-    ],
-  ),
-  weightedSingle(
-    "q14",
-    'You paste a long operations manual into AI and ask, "What are the biggest process risks?" It mostly discusses the opening section. What is the best fix?',
+  likert(
+    "q12",
+    'I am familiar with the concept of "agentic AI" - AI that can take multi-step actions on its own to complete a goal.',
     "aiBasics",
-    [
-      ["Ask the same question again with stronger wording.", 2],
-      ["Break the manual into sections, extract risks per section, then ask AI to rank the combined list.", 10],
-      ["Use a more polite prompt so the model pays attention.", 0],
-      ["Assume the opening section has the biggest risks because it appears first.", 1],
-    ],
   ),
-  weightedSingle(
-    "q15",
-    "Salespeople ignore an AI lead score even though the model looks accurate in a demo. What is the most likely missing system element?",
-    "teamPrivacyImplementation",
-    [
-      ["A feedback loop that shows why leads were scored, lets reps challenge scores, and connects the score to a real sales action.", 10],
-      ["A more colorful dashboard so the score is easier to notice.", 2],
-      ["A larger model so reps trust the score more.", 3],
-      ["A rule that reps must follow the AI score without debate.", 1],
-    ],
-  ),
-  weightedSingle(
-    "q17",
-    "Have you built or are you actively using agentic AI tools or workflows, such as OpenClaw, Hermes, custom agents, or tool-using assistants?",
+  multi(
+    "q13",
+    "Which of these have you personally used in the last 30 days? (Choose all that apply.)",
     "automationTools",
     [
-      ["Yes - in a real workflow with clear permissions, logs, and human approval for risky actions.", 10],
-      ["I have built or tested prototypes, but they are not reliable enough for real operations yet.", 6],
-      ["I use chatbots or simple automations, but not agents that can act across tools.", 3],
-      ["No, or I am not sure what agentic AI means yet.", 0],
+      ["ChatGPT", 0.5],
+      ["Claude", 0.5],
+      ["Gemini", 0.5],
+      ["Perplexity", 0.5],
+      ["DeepSeek", 0.5],
+      ["Cursor / Claude Code / OpenCode", 1],
+      ["Hermes Agent", 1],
+      ["n8n, Make, or Zapier", 1],
+      ["Custom GPTs or Claude Projects", 1],
+      ["MCP servers", 1],
+      ["None of the above", 0],
+    ],
+    4,
+  ),
+  single(
+    "q14",
+    "Your experience with AI agents (not just chatbots):",
+    "automationTools",
+    [
+      ["I have never used an AI agent - I only use chat interfaces.", 0],
+      ["I have tried built-in agent features (deep research, computer use, code interpreter).", 1],
+      ["I have used dedicated agent tools like Hermes Agent, OpenCode, or Claude Code.", 2],
+      ["I have built my own custom agents that run on a schedule.", 3],
+      ["I run multiple agents that coordinate and hand off to each other.", 4],
     ],
   ),
-  {
-    id: "q16",
-    title: "Do you have a group of people you meet with regularly to bounce AI ideas off of?",
-    type: "single",
-    options: [
-      option("q16_a", "Yes, I meet with them regularly.", "teamPrivacyImplementation"),
-      option("q16_b", "Sometimes, but not consistently.", "teamPrivacyImplementation"),
-      option("q16_c", "No, I do not have that yet.", "teamPrivacyImplementation"),
+  single(
+    "q15",
+    "When AI gives you an answer for something important, you typically:",
+    "verification",
+    [
+      ["Trust it and move on.", 0],
+      ["Skim it and spot-check the parts that look wrong.", 1],
+      ["Verify it against another source.", 2],
+      ["Cross-check it with a different AI model.", 3],
+      ["Run it through a verification workflow I built for that purpose.", 4],
     ],
-  },
+  ),
+  single(
+    "q16",
+    "What is the most advanced AI thing you have shipped or used in your business?",
+    "businessStrategy",
+    [
+      ["Nothing yet.", 0],
+      ["A few useful ChatGPT habits.", 1],
+      ["A custom GPT, Claude Project, or saved prompt I reuse.", 2],
+      ["An automation that runs on a schedule without me starting it.", 3],
+      ["A multi-agent system with memory that does meaningful work on its own.", 4],
+    ],
+  ),
+  likert(
+    "q17",
+    'I understand what a "context window" is and how it limits what an AI can remember in one conversation.',
+    "aiBasics",
+  ),
+  likert("q18", "My team has clear guidelines for what business data should and should not go into AI tools.", "teamPrivacyImplementation"),
+  likert("q19", "I have a peer group of other business owners I regularly discuss AI strategy with.", "teamPrivacyImplementation"),
+  single(
+    "q20",
+    "Twelve months from now, which best describes where you want your business to be?",
+    "businessStrategy",
+    [
+      ["About the same - wait and see how AI shakes out.", 0],
+      ["Using AI more in my own personal workflow.", 1],
+      ["Have my whole team using AI consistently.", 2],
+      ["Have custom AI tools built specifically for my business.", 3],
+      ["Have AI agents running significant parts of the business on their own.", 4],
+    ],
+  ),
 ];

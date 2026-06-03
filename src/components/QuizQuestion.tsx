@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { AnswerValue, CategoryKey, Question } from "@/lib/types";
 
 type QuizQuestionProps = {
@@ -34,7 +34,30 @@ function optionLabel(index: number) {
 
 export function QuizQuestion({ question, value, onChange, animDir = "forward" }: QuizQuestionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const selected = Array.isArray(value) ? value : [];
+  const selected = useMemo(() => (Array.isArray(value) ? value : []), [value]);
+  const isLikert = question.type === "likert";
+
+  const toggle = useCallback((optionId: string) => {
+    const option = question.options.find((item) => item.id === optionId);
+    if (!option) return;
+
+    if (question.type === "likert") {
+      onChange(option.points);
+      return;
+    }
+
+    if (question.type === "single") {
+      onChange(optionId);
+      return;
+    }
+
+    const isNone = option.label.toLowerCase().startsWith("none");
+    const noneIds = question.options.filter((item) => item.label.toLowerCase().startsWith("none")).map((item) => item.id);
+    const next = selected.includes(optionId)
+      ? selected.filter((item) => item !== optionId)
+      : [...selected.filter((item) => !(isNone || noneIds.includes(item))), optionId];
+    onChange(isNone ? [optionId] : next.filter((item) => !noneIds.includes(item)));
+  }, [onChange, question.options, question.type, selected]);
 
   useEffect(() => {
     containerRef.current?.classList.remove("quiz-card-enter", "quiz-card-exit");
@@ -44,8 +67,15 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Enter") return;
-      const idx = e.key.charCodeAt(0) - 97;
+      if (e.key === "Enter" || e.key === " ") return;
+
+      if (question.type === "likert" && /^[1-5]$/.test(e.key)) {
+        e.preventDefault();
+        toggle(question.options[Number(e.key) - 1].id);
+        return;
+      }
+
+      const idx = e.key.toLowerCase().charCodeAt(0) - 97;
       if (idx >= 0 && idx < question.options.length) {
         e.preventDefault();
         toggle(question.options[idx].id);
@@ -53,21 +83,7 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [question.id, question.options, selected, value]);
-
-  function toggle(optionId: string) {
-    if (question.type === "single") {
-      onChange(optionId);
-      return;
-    }
-    const option = question.options.find((item) => item.id === optionId);
-    const isNone = option?.label.toLowerCase().startsWith("none") ?? false;
-    const noneIds = question.options.filter((item) => item.label.toLowerCase().startsWith("none")).map((item) => item.id);
-    const next = selected.includes(optionId)
-      ? selected.filter((item) => item !== optionId)
-      : [...selected.filter((item) => !(isNone || noneIds.includes(item))), optionId];
-    onChange(isNone ? [optionId] : next.filter((item) => !noneIds.includes(item)));
-  }
+  }, [question.options, question.type, toggle]);
 
   const primaryCategory = question.options[0]?.category ?? "aiBasics";
 
@@ -79,15 +95,15 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
             {categoryLabels[primaryCategory]}
           </span>
           <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
-            {question.type === "multi" ? "Select all that apply" : "Choose one"}
+            {question.type === "multi" ? "Select all that apply" : isLikert ? "Choose your agreement level" : "Choose one"}
           </span>
         </div>
         <h1 className="mt-4 text-xl font-semibold leading-snug text-navy sm:text-2xl">{question.title}</h1>
       </div>
 
-      <div className="grid gap-2.5">
+      <div className={`grid gap-2.5 ${isLikert ? "sm:grid-cols-5" : ""}`}>
         {question.options.map((option, index) => {
-          const active = question.type === "single" ? value === option.id : selected.includes(option.id);
+          const active = isLikert ? value === option.points : question.type === "single" ? value === option.id : selected.includes(option.id);
           const letter = optionLabel(index);
           return (
             <button
@@ -98,14 +114,14 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
                 active
                   ? "border-electric bg-blue-50/80 text-navy shadow-sm"
                   : "border-line bg-white text-slate-600 hover:border-electric/40 hover:bg-slate-50"
-              }`}
+              } ${isLikert ? "sm:min-h-[128px] sm:flex-col sm:items-center sm:justify-center sm:text-center" : ""}`}
             >
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                   active ? "bg-electric text-white shadow-sm" : "bg-slate-100 text-slate-400"
                 }`}
               >
-                {question.type === "single" ? letter : active ? "✓" : letter}
+                {isLikert ? index + 1 : question.type === "single" ? letter : active ? "✓" : letter}
               </span>
               <span className="pt-0.5 text-sm leading-6">{option.label}</span>
             </button>
@@ -113,7 +129,13 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
         })}
       </div>
 
-      <p className="mt-4 text-xs text-slate-400">Press A-{optionLabel(question.options.length - 1)} to select, Enter to continue</p>
+      <p className="mt-4 text-xs text-slate-400">
+        {isLikert
+          ? "Press 1-5 to select, Enter to continue"
+          : question.type === "multi"
+            ? `Press A-${optionLabel(question.options.length - 1)} to toggle, or focus an option and press Space/Enter`
+            : `Press A-${optionLabel(question.options.length - 1)} to select, Enter to continue`}
+      </p>
     </section>
   );
 }

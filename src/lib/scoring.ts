@@ -99,18 +99,88 @@ export const actionPlan = [
 
 const categoryKeys: CategoryKey[] = ["aiBasics", "prompting", "verification", "businessStrategy", "automationTools", "teamPrivacyImplementation"];
 
-const iqAnchors = [
-  [0, 50],
-  [20, 70],
-  [40, 85],
-  [60, 100],
-  [80, 115],
-  [100, 135],
-  [120, 160],
-  [135, 190],
-  [145, 210],
-  [150, 225],
-] as const;
+const maxRawScore = 80;
+
+type TierInfo = {
+  max: number;
+  level: string;
+  tierLabel: string;
+  description: string;
+  pdfBand: "beginner" | "intermediate" | "advanced";
+};
+
+const tierTable: TierInfo[] = [
+  {
+    max: 20,
+    level: "0",
+    tierLabel: "AI-Unaware",
+    description: "You have not used AI in a meaningful way yet, or you are actively avoiding it.",
+    pdfBand: "beginner",
+  },
+  {
+    max: 40,
+    level: "1",
+    tierLabel: "AI-Curious",
+    description: "You are aware of AI, but it is not yet part of how your business operates.",
+    pdfBand: "beginner",
+  },
+  {
+    max: 60,
+    level: "2",
+    tierLabel: "AI-Beginner",
+    description: "You use AI occasionally, mostly through simple chat prompts.",
+    pdfBand: "beginner",
+  },
+  {
+    max: 80,
+    level: "3",
+    tierLabel: "AI-Casual User",
+    description: "You use AI regularly, but it is still mostly a personal productivity tool.",
+    pdfBand: "intermediate",
+  },
+  {
+    max: 100,
+    level: "4",
+    tierLabel: "AI-Practitioner",
+    description: "You are above average with prompting and are starting to use AI with more structure.",
+    pdfBand: "intermediate",
+  },
+  {
+    max: 120,
+    level: "5",
+    tierLabel: "AI-Builder",
+    description: "You build reusable prompts, custom GPTs, projects, or light automations.",
+    pdfBand: "intermediate",
+  },
+  {
+    max: 140,
+    level: "6",
+    tierLabel: "AI-Operator",
+    description: "You run scheduled automations and use multiple models or tools in real workflows.",
+    pdfBand: "advanced",
+  },
+  {
+    max: 160,
+    level: "7",
+    tierLabel: "AI-Strategist",
+    description: "You combine stronger prompting, verification, team adoption, and workflow strategy.",
+    pdfBand: "advanced",
+  },
+  {
+    max: 180,
+    level: "8",
+    tierLabel: "AI-Engineer",
+    description: "You build or operate agents that can run unattended on meaningful workflows.",
+    pdfBand: "advanced",
+  },
+  {
+    max: 200,
+    level: "9-10",
+    tierLabel: "AI-Native",
+    description: "You are operating with product-grade AI, agents, MCP, or multi-agent systems.",
+    pdfBand: "advanced",
+  },
+];
 
 function selectedIds(answer: unknown): string[] {
   if (Array.isArray(answer)) return answer;
@@ -121,7 +191,9 @@ function selectedIds(answer: unknown): string[] {
 function selectedOptions(questionId: string, answers: Answers) {
   const question = quizQuestions.find((item) => item.id === questionId);
   if (!question) return [];
-  const ids = selectedIds(answers[questionId]);
+  const answer = answers[questionId];
+  if (typeof answer === "number") return question.options.filter((option) => option.points === answer);
+  const ids = selectedIds(answer);
   return ids.map((id) => question.options.find((option) => option.id === id)).filter(Boolean) as QuestionOption[];
 }
 
@@ -155,7 +227,7 @@ function scoreQuestion(questionId: string, answers: Answers) {
 function maxCategoryPoints() {
   const totals = emptyCategoryTotals();
   for (const question of quizQuestions) {
-    if (question.type === "single") {
+    if (question.type !== "multi") {
       const best = question.options.reduce((current, option) => (option.points > current.points ? option : current), question.options[0]);
       totals[best.category] += Math.max(0, best.points);
     } else {
@@ -167,41 +239,16 @@ function maxCategoryPoints() {
   return totals;
 }
 
-function maxRawPoints() {
-  return quizQuestions.reduce((sum, question) => {
-    const best = question.options.reduce((current, option) => (option.points > current.points ? option : current), question.options[0]);
-    return sum + Math.max(0, best.points);
-  }, 0);
-}
-
 function iqFromRaw(rawScore: number) {
-  const maxRaw = maxRawPoints();
-  const scaledRaw = maxRaw > 0 ? (Math.max(0, Math.min(maxRaw, rawScore)) / maxRaw) * 150 : 0;
-  for (let i = 0; i < iqAnchors.length - 1; i++) {
-    const [rawA, iqA] = iqAnchors[i];
-    const [rawB, iqB] = iqAnchors[i + 1];
-    if (scaledRaw >= rawA && scaledRaw <= rawB) {
-      const progress = (scaledRaw - rawA) / (rawB - rawA);
-      return Math.round(iqA + progress * (iqB - iqA));
-    }
-  }
-  return 225;
+  return Math.round(Math.max(0, Math.min(maxRawScore, rawScore)) * 2.5);
 }
 
 function tierFor(iqScore: number) {
-  if (iqScore >= 225) return "AI Genius - Where you need to be";
-  if (iqScore >= 190) return "AI Strategist - Top 1%";
-  if (iqScore >= 160) return "AI Builder - Top 5%";
-  if (iqScore >= 135) return "AI Operator - Top 20%";
-  if (iqScore >= 115) return "AI Practitioner - Above Average";
-  if (iqScore >= 100) return "AI Capable - At Business Average";
-  if (iqScore >= 85) return "AI Aware - Below Business Average";
-  if (iqScore >= 70) return "AI Curious - Just Getting Started";
-  return "AI Skeptic - Behind the Curve";
+  return tierTable.find((tier) => iqScore <= tier.max) ?? tierTable[tierTable.length - 1];
 }
 
 export function percentileForIq(iqScore: number) {
-  const z = (iqScore - 100) / 20;
+  const z = (iqScore - 60) / 25;
   const t = 1 / (1 + 0.2316419 * Math.abs(z));
   const d = 0.3989423 * Math.exp((-z * z) / 2);
   const probability =
@@ -212,16 +259,6 @@ export function percentileForIq(iqScore: number) {
   return Math.min(99, Math.max(1, Math.round(cdf * 100)));
 }
 
-function profileDescription(profile: string) {
-  if (profile.includes("Skeptic") || profile.includes("Curious") || profile.includes("Aware")) {
-    return "You are early in the AI adoption curve. Your biggest win is building strong foundations, safer prompting habits, and one clear first workflow.";
-  }
-  if (profile.includes("Capable") || profile.includes("Practitioner")) {
-    return "You are near or above the business-owner average. Your next move is turning individual AI use into repeatable workflows with stronger verification and ROI focus.";
-  }
-  return "You are ahead of most business owners. The opportunity now is disciplined execution: better systems, sharper automation, safer team rollout, and higher-ROI AI projects.";
-}
-
 function riskFlags() {
   return [];
 }
@@ -230,12 +267,12 @@ function course(status: CourseRecommendation["status"], key: keyof typeof module
   return { ...modules[key], status, reason };
 }
 
-function routeModules(profile: string, scores: Record<CategoryKey, number>, flags: string[]) {
+function routeModules(pdfBand: "beginner" | "intermediate" | "advanced", scores: Record<CategoryKey, number>, flags: string[]) {
   const recommendedModules: CourseRecommendation[] = [];
   const skippedModules: CourseRecommendation[] = [];
   const add = (item: CourseRecommendation) => (item.status === "Skip" ? skippedModules.push(item) : recommendedModules.push(item));
-  const beginner = profile.includes("Skeptic") || profile.includes("Curious") || profile.includes("Aware");
-  const intermediate = profile.includes("Capable") || profile.includes("Practitioner");
+  const beginner = pdfBand === "beginner";
+  const intermediate = pdfBand === "intermediate";
 
   if (beginner) {
     add(course("Full", "module1", "AI foundations should come first."));
@@ -326,7 +363,7 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question scenario assessment. First project: ${result.recommendedProject.name}. Focus first on ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile} - Level ${result.level}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question assessment. First project: ${result.recommendedProject.name}. Focus first on ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
     .join(", ")} to raise the next version of the score.`;
@@ -352,9 +389,9 @@ export function calculateResult(answers: Answers, name: string, email: string | 
   ) as Record<CategoryKey, number>;
 
   const overallScore = iqFromRaw(rawScore);
-  const profile = tierFor(overallScore);
+  const tier = tierFor(overallScore);
   const flags = riskFlags();
-  const { recommendedModules, skippedModules } = routeModules(profile, categoryScores, flags);
+  const { recommendedModules, skippedModules } = routeModules(tier.pdfBand, categoryScores, flags);
   const recommendedProject = firstProject(categoryScores);
   const { strengths, gaps } = insightLists(categoryScores, flags);
 
@@ -365,10 +402,10 @@ export function calculateResult(answers: Answers, name: string, email: string | 
 
   const dynamicLessons: Record<CategoryKey, string> = {
     aiBasics: "Plain-English breakdown of every AI buzzword",
-    prompting: "Prompting 101 — context, constraints, and examples that get better output",
+    prompting: "Prompting 101 - context, constraints, and examples that get better output",
     verification: "When to trust AI and when to verify",
     businessStrategy: "How to choose your first AI project",
-    automationTools: "No-code AI tools — n8n, Make, Zapier with AI in the loop",
+    automationTools: "No-code AI tools - n8n, Make, Zapier with AI in the loop",
     teamPrivacyImplementation: "What not to paste into AI tools",
   };
 
@@ -377,11 +414,13 @@ export function calculateResult(answers: Answers, name: string, email: string | 
     email,
     answers,
     categoryScores,
-    rawScore: Math.round(rawScore),
+    rawScore: Number(rawScore.toFixed(1)),
     overallScore,
     percentile: percentileForIq(overallScore),
-    profile,
-    profileDescription: profileDescription(profile),
+    profile: tier.tierLabel,
+    level: tier.level,
+    pdfBand: tier.pdfBand,
+    profileDescription: tier.description,
     strengths,
     gaps,
     skippedModules,

@@ -49,7 +49,7 @@ export default function QuizPage() {
     function handleKey(e: KeyboardEvent) {
       if (e.key !== "Enter") return;
       const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || tag === "BUTTON") return;
       e.preventDefault();
       if (canContinue) next();
     }
@@ -65,7 +65,7 @@ export default function QuizPage() {
     ? name.trim().length > 0 && email.trim().length > 0
     : Array.isArray(currentAnswer)
       ? currentAnswer.length > 0
-      : Boolean(currentAnswer);
+      : currentAnswer !== undefined && currentAnswer !== "";
 
   function setAnswer(value: AnswerValue) {
     setError("");
