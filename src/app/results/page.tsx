@@ -68,7 +68,7 @@ export default function ResultsPage() {
     );
   }
 
-  const tierDisplay = result.level ? `${result.profile} - Level ${result.level}` : result.profile;
+  const tierDisplay = result.level ? `${result.profile} · Level ${result.level}/10` : result.profile;
 
   return (
     <main className="min-h-screen">
@@ -128,7 +128,7 @@ export default function ResultsPage() {
 
             <div className="rounded-xl border border-white/60 glass-card p-6 shadow-sm">
               <p className="leading-7 text-slate-700">
-                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. Most business owners land around 60 &mdash; Level 3, where AI is a useful tool but not yet a force multiplier. The breakdown below shows your strengths and your three biggest gaps.
+                Here&apos;s what your score means. You scored higher than {result.percentile}% of business owners who&apos;ve taken this assessment. Most business owners land around 60 &mdash; Level 3/10, where AI is a useful tool but not yet a force multiplier. The breakdown below shows your strengths and your three biggest gaps.
               </p>
             </div>
 

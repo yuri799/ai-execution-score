@@ -375,7 +375,7 @@ function insightLists(scores: Record<CategoryKey, number>, flags: string[]) {
 }
 
 function roadmapText(result: Omit<QuizResult, "generatedRoadmap">) {
-  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile} - Level ${result.level}) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question assessment. First project: ${result.recommendedProject.name}. Focus first on ${result.recommendedModules
+  return `${result.name}'s AI Business IQ is ${result.overallScore} (${result.profile} · Level ${result.level}/10) based on ${result.rawScore} raw points across the ${quizQuestions.length}-question assessment. First project: ${result.recommendedProject.name}. Focus first on ${result.recommendedModules
     .slice(0, 3)
     .map((item) => `${item.module} (${item.status})`)
     .join(", ")} to raise the next version of the score.`;

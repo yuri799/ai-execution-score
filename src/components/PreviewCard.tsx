@@ -30,7 +30,7 @@ export function PreviewCard() {
               <span className="text-6xl font-black tracking-tight text-orange-500 tabular-nums">{displayScore}</span>
               <span className="pb-2 text-sm font-bold text-slate-500">IQ</span>
             </div>
-            <p className="mt-2 font-bold text-electric">AI-Practitioner - Level 4</p>
+            <p className="mt-2 font-bold text-electric">AI-Practitioner · Level 4/10</p>
           </div>
           <div className="rounded-lg bg-navy px-3 py-2 text-right text-white">
             <p className="text-xs font-bold uppercase text-blue-200">Your Target</p>
