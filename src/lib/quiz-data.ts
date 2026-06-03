@@ -41,9 +41,8 @@ export const quizQuestions: Question[] = [
   likert("q3", "AI replacing human judgment in business is something I worry a lot about.", "verification", true),
   likert("q4", "Businesses that ignore AI for the next two years will fall behind.", "businessStrategy"),
   likert("q5", "I use AI tools at least once every working day.", "businessStrategy"),
-  likert("q6", "I have written a prompt longer than three sentences this week.", "prompting"),
+  likert("q6", "I have written a prompt longer than three sentences in the last 10 days.", "prompting"),
   likert("q7", "I have built or customized at least one AI workflow that runs without me babysitting it.", "automationTools"),
-  likert("q8", "I have taught at least one person on my team how to use AI for their work.", "teamPrivacyImplementation"),
   likert("q9", "I regularly compare outputs from different AI models for the same task.", "businessStrategy"),
   likert(
     "q10",
@@ -78,7 +77,7 @@ export const quizQuestions: Question[] = [
       ["Perplexity", 0.5],
       ["DeepSeek", 0.5],
       ["Cursor / Claude Code / OpenCode", 1],
-      ["Hermes Agent", 1],
+      ["Hermes Agent / OpenClaw / other agentic AI", 1],
       ["n8n, Make, or Zapier", 1],
       ["Custom GPTs or Claude Projects", 1],
       ["MCP servers", 1],
@@ -93,7 +92,7 @@ export const quizQuestions: Question[] = [
     [
       ["I have never used an AI agent - I only use chat interfaces.", 0],
       ["I have tried built-in agent features (deep research, computer use, code interpreter).", 1],
-      ["I have used dedicated agent tools like Hermes Agent, OpenCode, or Claude Code.", 2],
+      ["I have used dedicated agent tools like Hermes Agent, OpenClaw, OpenCode, or Claude Code.", 2],
       ["I have built my own custom agents that run on a schedule.", 3],
       ["I run multiple agents that coordinate and hand off to each other.", 4],
     ],
@@ -127,7 +126,7 @@ export const quizQuestions: Question[] = [
     'I understand what a "context window" is and how it limits what an AI can remember in one conversation.',
     "aiBasics",
   ),
-  likert("q18", "My team has clear guidelines for what business data should and should not go into AI tools.", "teamPrivacyImplementation"),
+  likert("q18", "I have clear guidelines for what business data should and should not go into AI tools.", "teamPrivacyImplementation"),
   likert("q19", "I have a peer group of other business owners I regularly discuss AI strategy with.", "teamPrivacyImplementation"),
   single(
     "q20",
@@ -136,7 +135,7 @@ export const quizQuestions: Question[] = [
     [
       ["About the same - wait and see how AI shakes out.", 0],
       ["Using AI more in my own personal workflow.", 1],
-      ["Have my whole team using AI consistently.", 2],
+      ["Have repeatable AI workflows being used consistently.", 2],
       ["Have custom AI tools built specifically for my business.", 3],
       ["Have AI agents running significant parts of the business on their own.", 4],
     ],

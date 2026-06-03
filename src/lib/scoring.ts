@@ -99,7 +99,18 @@ export const actionPlan = [
 
 const categoryKeys: CategoryKey[] = ["aiBasics", "prompting", "verification", "businessStrategy", "automationTools", "teamPrivacyImplementation"];
 
-const maxRawScore = 80;
+const maxRawScore = Math.max(
+  1,
+  quizQuestions.reduce((total, question) => {
+    if (question.type === "multi") {
+      const positivePoints = question.options
+        .filter((option) => option.points > 0)
+        .reduce((sum, option) => sum + option.points, 0);
+      return total + Math.min(positivePoints, question.maxPoints ?? positivePoints);
+    }
+    return total + Math.max(...question.options.map((option) => Math.max(0, option.points)));
+  }, 0),
+);
 
 type TierInfo = {
   max: number;
@@ -240,7 +251,8 @@ function maxCategoryPoints() {
 }
 
 function iqFromRaw(rawScore: number) {
-  return Math.round(Math.max(0, Math.min(maxRawScore, rawScore)) * 2.5);
+  const boundedRawScore = Math.max(0, Math.min(maxRawScore, rawScore));
+  return Math.round((boundedRawScore / maxRawScore) * 200);
 }
 
 function tierFor(iqScore: number) {

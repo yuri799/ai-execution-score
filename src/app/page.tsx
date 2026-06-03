@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChartColumn, CircleCheck, ClipboardList, Route } from "lucide-react";
 import { PreviewCard } from "@/components/PreviewCard";
+import { quizQuestions } from "@/lib/quiz-data";
 
 const outcomes = [
   { icon: ChartColumn, label: "Your AI Business IQ", desc: "A clear score that shows where you stand." },
@@ -31,7 +32,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
               {[
-                ["20", "assessment questions"],
+                [String(quizQuestions.length), "assessment questions"],
                 ["6", "business AI categories"],
                 ["1", "personalized improvement roadmap"],
               ].map(([value, label]) => (

@@ -38,7 +38,6 @@ function doPost(e) {
     answers.q5,
     answers.q6,
     answers.q7,
-    answers.q8,
     answers.q9,
     answers.q10,
     answers.q11,

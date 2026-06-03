@@ -60,9 +60,9 @@ export function QuizQuestion({ question, value, onChange, animDir = "forward" }:
   }, [onChange, question.options, question.type, selected]);
 
   useEffect(() => {
-    containerRef.current?.classList.remove("quiz-card-enter", "quiz-card-exit");
+    containerRef.current?.classList.remove("quiz-card-enter", "quiz-card-enter-back");
     void containerRef.current?.offsetWidth;
-    containerRef.current?.classList.add(animDir === "forward" ? "quiz-card-enter" : "quiz-card-exit");
+    containerRef.current?.classList.add(animDir === "forward" ? "quiz-card-enter" : "quiz-card-enter-back");
   }, [question.id, animDir]);
 
   useEffect(() => {
