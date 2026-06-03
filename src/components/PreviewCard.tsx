@@ -7,7 +7,7 @@ export function PreviewCard() {
   const [displayScore, setDisplayScore] = useState(0);
 
   useEffect(() => {
-    const target = 138;
+    const target = 94;
     const duration = 900;
     const start = performance.now();
     function tick(now: number) {
@@ -30,7 +30,7 @@ export function PreviewCard() {
               <span className="text-6xl font-black tracking-tight text-orange-500 tabular-nums">{displayScore}</span>
               <span className="pb-2 text-sm font-bold text-slate-500">IQ</span>
             </div>
-            <p className="mt-2 font-bold text-electric">AI-Operator - Level 6</p>
+            <p className="mt-2 font-bold text-electric">AI-Practitioner - Level 4</p>
           </div>
           <div className="rounded-lg bg-navy px-3 py-2 text-right text-white">
             <p className="text-xs font-bold uppercase text-blue-200">Your Target</p>
@@ -39,7 +39,7 @@ export function PreviewCard() {
         </div>
         <div className="mt-6 space-y-4">
           {["AI Basics", "Prompting", "Verification", "Business Strategy", "Automation Tools", "Team & Privacy"].map((label, i) => {
-            const vals = [88, 75, 70, 80, 65, 60];
+            const vals = [68, 58, 54, 62, 48, 46];
             return (
               <div key={label}>
                 <div className="mb-2 flex justify-between text-sm font-semibold">
