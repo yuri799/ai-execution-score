@@ -5,3 +5,4 @@ dist
 .env*.local
 .npm-cache
 npm-debug.log*
+*.tsbuildinfo
